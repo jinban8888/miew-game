@@ -246,7 +246,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
     <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(0)">1-60关</button>
     <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(1)">61-420关</button>
     <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(2)">421-1980关</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(3)">1981-6000关</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(3)">1981-100000关</button>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin:2px 0">
     <button id="level-prev" onclick="levelPageNav(-1)" style="width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);visibility:hidden">‹</button>
@@ -649,12 +649,12 @@ const Game = (() => {
       totalCards = Math.floor(80 + (lvl - 100) * 1.2);
       cardTypes = 8;
       layerCount = 9 + Math.floor((lvl - 100) / 80);
-    } else if (lvl <= 2000) {
+    } else if (lvl <= 10000) {
       totalCards = Math.floor(120 + (lvl - 500) * 0.5);
       cardTypes = 8;
       layerCount = 14;
     } else {
-      totalCards = Math.min(180, Math.floor(130 + (lvl - 2000) * 0.03));
+      totalCards = Math.min(200, Math.floor(130 + (lvl - 10000) * 0.005));
       cardTypes = 8;
       layerCount = 15;
     }
@@ -717,8 +717,15 @@ const Game = (() => {
     // Step 4: Assign card types to positions
     // The key: deal from the TOP (highest layer) down so lower cards get placed first
     // Sort positions by z descending (top layer first in dealing)
-    let dealOrder = allPositions.slice(0, totalCards);
-    dealOrder.sort((a, b) => b.z - a.z); // High z (top layer) dealt first
+    // Take positions from ALL layers, not just layer 0
+    const shuffled = allPositions.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    let dealOrder = shuffled.slice(0, totalCards);
+    // Sort so high z positions get dealt first (top layer cards on top)
+    dealOrder.sort((a, b) => b.z - a.z);
 
     let newCards = [];
     let id = 0;
@@ -931,7 +938,7 @@ const Game = (() => {
     }
     if (fragmentReward > 0) state.fragments += fragmentReward;
 
-    if (!isDaily && state.level > 6000) {
+    if (!isDaily && state.level > 100000) {
       // Already completed all levels, don't advance
     } else if (!isDaily) {
       state.level++;
@@ -1123,6 +1130,12 @@ const Game = (() => {
 
   // ===== START LEVEL =====
   function startLevel(lvl, daily = false) {
+    // Anti-cheat: only allow starting at or just after max reachable level
+    const maxReached = Math.max(1, state.level);
+    if (!daily && lvl > maxReached + 1) {
+      toast('请从当前关卡开始游戏', 'e');
+      return;
+    }
     isDaily = daily;
     state.level = lvl;
     cards = generateLevel(lvl, daily);
@@ -1166,8 +1179,8 @@ const Game = (() => {
     const nextLvl = state.level + 1;
     if (isDaily) {
       showHome();
-    } else if (nextLvl > 6000) {
-      toast('恭喜通关全部6000关！', 's');
+    } else if (nextLvl > 100000) {
+      toast('恭喜通关全部100000关！', 's');
       showHome();
     } else {
       startLevel(nextLvl, false);
@@ -1205,14 +1218,14 @@ const Game = (() => {
       grid.appendChild(btn);
     }
 
-    document.getElementById('level-progress-fill').style.width = (maxReached / 6000 * 100) + '%';
+    document.getElementById('level-progress-fill').style.width = (maxReached / 100000 * 100) + '%';
 
     // Update nav buttons
     const prevBtn = document.getElementById('level-prev');
     const nextBtn = document.getElementById('level-next');
     const pageLabel = document.getElementById('level-page-label');
     if (prevBtn) prevBtn.style.visibility = offset > 0 ? 'visible' : 'hidden';
-    if (nextBtn) nextBtn.style.visibility = endLvl < 6000 ? 'visible' : 'hidden';
+    if (nextBtn) nextBtn.style.visibility = endLvl < 100000 ? 'visible' : 'hidden';
     if (pageLabel) pageLabel.textContent = `${startLvl}-${endLvl}关`;
   }
 
@@ -1231,7 +1244,7 @@ const Game = (() => {
   }
 
   function levelPageNav(dir) {
-    const maxPage = Math.floor((6000 - 1) / LEVELS_PER_PAGE);
+    const maxPage = Math.floor((100000 - 1) / LEVELS_PER_PAGE);
     levelPageOffset = Math.max(0, Math.min(maxPage, levelPageOffset + dir));
     renderLevelPage(levelPageOffset);
   }
