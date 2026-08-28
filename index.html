@@ -53,7 +53,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
 .pause-btn{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 
-.board-area{position:absolute;width:100%;max-width:380px;left:50%;transform:translateX(-50%);top:50px;bottom:180px;z-index:1;background:linear-gradient(180deg,#FFF3E0 0%,#FFE8C8 100%);border-radius:12px}
+.board-area{position:absolute;width:100%;max-width:380px;left:50%;transform:translateX(-50%);top:50px;bottom:180px;z-index:1;background:linear-gradient(180deg,#FFF3E0 0%,#FFE8C8 100%);border-radius:12px;transition:background 0.8s}
+@media(min-width:768px){#game .board-area{max-width:55vmin;top:50%;transform:translate(-50%,-50%);height:55vmin;bottom:auto}}
 .card-stack{position:absolute;inset:0}
 
 /* Card design - PILE cards */
@@ -242,10 +243,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   </div>
   <div class="level-progress-bar"><div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div></div>
   <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0">
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(0)">1-100关</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(1)">101-500</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(2)">501-2000</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(3)">2001-6000</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(0)">1-60关</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(1)">61-420关</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(2)">421-1980关</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(3)">1981-6000关</button>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin:2px 0">
     <button id="level-prev" onclick="levelPageNav(-1)" style="width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);visibility:hidden">‹</button>
@@ -418,6 +419,27 @@ const Audio = (() => {
   function playWin() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f, 0.3, 'sine', 0.3), i*150)); }
   function playLose() { [400,350,300].forEach((f,i)=>setTimeout(()=>playTone(f, 0.3, 'sine', 0.25), i*200)); }
   function playError() { playTone(200, 0.3, 'square', 0.15); }
+  function playSheepBaa() { playTone(440, 0.2, 'sine', 0.2); setTimeout(()=>playTone(380, 0.15, 'sine', 0.15), 150); }
+  function playSheepSigh() { playTone(250, 0.3, 'sine', 0.12); }
+  function playHappyBGM() {
+    if (!ctx || !settings.bgm) return;
+    stopBGM();
+    const notes = [659,784,880,784,880,1047,1047,1175,1047];
+    let idx = 0;
+    bgmInterval = setInterval(() => {
+      if (!settings.bgm || !ctx) { stopBGM(); return; }
+      const freq = notes[idx % notes.length];
+      idx++;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'triangle'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.1, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+      o.start(); o.stop(ctx.currentTime + 0.45);
+    }, 300);
+  }
+  function switchToHappyBGM() { playHappyBGM(); }
 
   function startBGM() {
     if (!settings.bgm || !ctx || bgmInterval) return;
@@ -750,7 +772,7 @@ const Game = (() => {
       el.style.transform = `scale(${scale})`;
 
       if (clickable) {
-        el.addEventListener('click', () => onCardClick(card.id));
+        el.addEventListener('click', () => { showBlockedSheepSigh(); onCardClick(card.id); });
         el.addEventListener('touchstart', (e) => {
           e.preventDefault();
           Audio.playClick();
@@ -815,6 +837,8 @@ const Game = (() => {
     }
 
     Audio.playClick();
+    playSheepBaa();
+    showSheepBubble('咩~');
     card.inSlot = true;
     card.slotIdx = emptyIdx;
     slots[emptyIdx] = card;
@@ -893,7 +917,8 @@ const Game = (() => {
     gameActive = false;
     clearInterval(timerInterval);
     Audio.playWin();
-    Audio.vibrate([100, 50, 100]);
+    Audio.vibrate([100, 50, 100, 50, 100]);
+    Audio.switchToHappyBGM();
 
     const reward = state.level * 10;
     const fragmentReward = (isDaily || state.todayLevels.length === 0) ? 1 : 0;
@@ -928,10 +953,11 @@ const Game = (() => {
       fragEl.style.display = 'none';
     }
 
-    const subtitles = ['太棒了，你成功通关了！', '手气不错，继续加油！', '羊羊都被你消灭了！', '差一点就放弃了，结果通关了！'];
+    const subtitles = ['太棒了，你成功通关了！', '手气不错，继续加油！', '羊羊都被你消灭了！', '差一点就放弃了，结果通关了！', '你是最棒的！'];
     document.getElementById('win-subtitle').textContent = subtitles[Math.floor(Math.random() * subtitles.length)];
 
     spawnConfetti();
+    spawnDancingSheep();
     setTimeout(() => showScreen('winscr'), 600);
   }
 
@@ -1113,6 +1139,17 @@ const Game = (() => {
     document.getElementById('game-level-label').textContent = daily ? '每日挑战' : `第 ${lvl} 关`;
     document.getElementById('game-timer').textContent = '⏱ 0:00';
 
+    // Update theme every 5 levels
+    const themeIdx = Math.floor(lvl / 5) % 4;
+    const themes = [
+      'linear-gradient(180deg,#C8F0C8 0%,#98D898 100%)',   // 春季草原
+      'linear-gradient(180deg,#F4E4C4 0%,#E8C890 100%)',   // 沙漠
+      'linear-gradient(180deg,#3D5A6C 0%,#2C3E50 100%)',   // 夜晚草原
+      'linear-gradient(180deg,#FF9A7A 0%,#FF7A5A 100%)',   // 傍晚
+    ];
+    const boardEl2 = document.getElementById('board-area');
+    if (boardEl2) boardEl2.style.background = themes[themeIdx];
+
     renderBoard();
     renderSlots();
     showScreen('game');
@@ -1140,7 +1177,7 @@ const Game = (() => {
   // ===== LEVEL SELECT =====
   // Level select state for pagination
   let levelPageOffset = 0;
-  const LEVELS_PER_PAGE = 100;
+  const LEVELS_PER_PAGE = 60;
 
   function renderLevelPage(offset) {
     const grid = document.getElementById('level-grid');
@@ -1318,17 +1355,34 @@ const Game = (() => {
 
   // ===== CONFETTI =====
   function spawnConfetti() {
-    const emojis = ['🎉', '🎊', '⭐', '🌟', '💫', '✨', '🎈', '🏆'];
-    for (let i = 0; i < 30; i++) {
+    const emojis = ['🎉', '🎊', '⭐', '🌟', '💫', '✨', '🎈', '🏆', '🐑', '🌈', '🍀'];
+    for (let i = 0; i < 50; i++) {
       setTimeout(() => {
         const el = document.createElement('div');
         el.className = 'confetti';
         el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
         el.style.left = Math.random() * 100 + 'vw';
         el.style.animationDuration = (2 + Math.random() * 2) + 's';
+        el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 4000);
-      }, i * 60);
+      }, i * 50);
+    }
+  }
+  function spawnDancingSheep() {
+    const sheep = ['🐑', '🐏', '🦙', '🐐'];
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'confetti';
+        el.textContent = sheep[Math.floor(Math.random() * sheep.length)];
+        el.style.left = (15 + Math.random() * 70) + 'vw';
+        el.style.animationDuration = (2.5 + Math.random()) + 's';
+        el.style.fontSize = '2.5rem';
+        el.style.animationIterationCount = '3';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 10000);
+      }, i * 200);
     }
   }
 
@@ -1338,6 +1392,26 @@ const Game = (() => {
     el.textContent = msg;
     el.className = 'show' + (type ? ' ' + type : '');
     setTimeout(() => el.classList.remove('show'), 2000);
+  }
+  let sheepBubbleTimeout = null;
+  function showSheepBubble(text) {
+    let bubble = document.getElementById('sheep-bubble');
+    if (!bubble) {
+      bubble = document.createElement('div');
+      bubble.id = 'sheep-bubble';
+      bubble.style.cssText = 'position:fixed;top:15%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);color:#4A3728;padding:8px 16px;border-radius:20px;font-size:1.3rem;font-weight:700;z-index:5000;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:opacity 0.3s;';
+      document.body.appendChild(bubble);
+    }
+    clearTimeout(sheepBubbleTimeout);
+    bubble.textContent = '🐑 ' + text;
+    bubble.style.opacity = '1';
+    sheepBubbleTimeout = setTimeout(() => { bubble.style.opacity = '0'; }, 800);
+  }
+  function showBlockedSheepSigh() {
+    if (Math.random() < 0.3) { // Only 30% chance to not spam
+      playSheepSigh();
+      showSheepBubble('唉...' );
+    }
   }
 
   function stopBGM() {
