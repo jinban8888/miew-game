@@ -842,7 +842,9 @@ const Game = (() => {
   function onCardClickById(id) {
     if (!gameActive || paused) return;
     const card = cards.find(c => c.id === id);
-    if (!card || card.removed || card.inSlot || !isCardClickable(card)) return;
+    // Skip isCardClickable check here - DOM already marks disabled cards
+    // Re-checking with wrong scale causes false negatives
+    if (!card || card.removed || card.inSlot) return;
 
     // Find empty slot
     const emptyIdx = slots.findIndex(s => s === null);
