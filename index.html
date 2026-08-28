@@ -241,6 +241,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
     <div style="width:36px"></div>
   </div>
   <div class="level-progress-bar"><div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div></div>
+  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0">
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(0)">1-100关</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(1)">101-500</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(2)">501-2000</button>
+    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(3)">2001-6000</button>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin:2px 0">
+    <button id="level-prev" onclick="levelPageNav(-1)" style="width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);visibility:hidden">‹</button>
+    <span id="level-page-label" style="font-size:0.8rem;color:#8B7355;font-weight:600"></span>
+    <button id="level-next" onclick="levelPageNav(1)" style="width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)">›</button>
+  </div>
   <div class="level-grid" id="level-grid"></div>
   <div style="padding:8px;text-align:center;color:#8B7355;font-size:0.8rem" id="level-hint">已达今日30关上限，明日再来吧～</div>
 </div>
@@ -599,21 +610,35 @@ const Game = (() => {
     const cardW = 52;
     const cardH = 68;
 
-    // Difficulty parameters
+    // Difficulty parameters for 6000 levels
+    // Level 1: Tutorial (15 cards, 4 types, 3 layers)
+    // Levels 2-100: Easy (grows quickly, 5-7 types)
+    // Levels 101-500: Medium (6-8 types, 8-10 layers)
+    // Levels 501-2000: Hard (8 types, 10-13 layers, 80-120 cards)
+    // Levels 2001-6000: Extreme (8 types, 13-15 layers, 120-180 cards)
     let totalCards, cardTypes, layerCount;
     if (lvl === 1) {
       totalCards = 15; cardTypes = 4; layerCount = 3;
-    } else if (lvl <= 5) {
-      totalCards = 24 + lvl * 3; cardTypes = 5; layerCount = 4 + lvl;
-    } else if (lvl <= 10) {
-      totalCards = 40 + (lvl - 5) * 5; cardTypes = 6; layerCount = 8 + Math.floor((lvl - 5) * 0.5);
-    } else if (lvl <= 20) {
-      totalCards = 65 + (lvl - 10) * 4; cardTypes = 7; layerCount = 10 + Math.floor((lvl - 10) * 0.4);
+    } else if (lvl <= 100) {
+      totalCards = Math.floor(20 + lvl * 1.8);
+      cardTypes = 5 + Math.floor(lvl / 30);
+      layerCount = 3 + Math.floor(lvl / 15);
+    } else if (lvl <= 500) {
+      totalCards = Math.floor(80 + (lvl - 100) * 1.2);
+      cardTypes = 8;
+      layerCount = 9 + Math.floor((lvl - 100) / 80);
+    } else if (lvl <= 2000) {
+      totalCards = Math.floor(120 + (lvl - 500) * 0.5);
+      cardTypes = 8;
+      layerCount = 14;
     } else {
-      totalCards = 105 + (lvl - 20) * 2; cardTypes = 8; layerCount = 14;
+      totalCards = Math.min(180, Math.floor(130 + (lvl - 2000) * 0.03));
+      cardTypes = 8;
+      layerCount = 15;
     }
-    totalCards = Math.min(120, Math.max(15, totalCards));
+    totalCards = Math.min(180, Math.max(15, totalCards));
     layerCount = Math.min(15, Math.max(3, layerCount));
+    cardTypes = Math.min(8, Math.max(4, cardTypes));
 
     // Step 1: Generate type counts (ensures divisible by 3)
     let counts = new Array(cardTypes).fill(0);
@@ -881,7 +906,7 @@ const Game = (() => {
     }
     if (fragmentReward > 0) state.fragments += fragmentReward;
 
-    if (!isDaily && state.level > 60) {
+    if (!isDaily && state.level > 6000) {
       // Already completed all levels, don't advance
     } else if (!isDaily) {
       state.level++;
@@ -1104,8 +1129,8 @@ const Game = (() => {
     const nextLvl = state.level + 1;
     if (isDaily) {
       showHome();
-    } else if (nextLvl > 60) {
-      toast('恭喜通关全部60关！', 's');
+    } else if (nextLvl > 6000) {
+      toast('恭喜通关全部6000关！', 's');
       showHome();
     } else {
       startLevel(nextLvl, false);
@@ -1113,18 +1138,21 @@ const Game = (() => {
   }
 
   // ===== LEVEL SELECT =====
-  function showLevelSelect() {
-    showScreen('level-select');
-    const grid = document.getElementById('level-grid');
-    grid.innerHTML = '';
+  // Level select state for pagination
+  let levelPageOffset = 0;
+  const LEVELS_PER_PAGE = 100;
 
+  function renderLevelPage(offset) {
+    const grid = document.getElementById('level-grid');
     const maxReached = Math.max(1, state.level);
     const todayCount = state.todayLevels.length;
     const atLimit = todayCount >= 30;
+    grid.innerHTML = '';
 
-    document.getElementById('level-progress-fill').style.width = (maxReached / 60 * 100) + '%';
+    const startLvl = offset * LEVELS_PER_PAGE + 1;
+    const endLvl = Math.min((offset + 1) * LEVELS_PER_PAGE, 6000);
 
-    for (let i = 1; i <= 60; i++) {
+    for (let i = startLvl; i <= endLvl; i++) {
       const btn = document.createElement('button');
       btn.className = 'level-btn';
       if (i > maxReached) {
@@ -1132,16 +1160,50 @@ const Game = (() => {
       } else if (i === state.level) {
         btn.classList.add('current');
       }
-      btn.innerHTML = `<span class="level-num">${i}</span><span class="level-status">${i <= state.todayLevels.filter(l => l === i).length ? '⭐' : ''}</span>`;
+      const won = state.todayLevels.filter(l => l === i).length;
+      btn.innerHTML = `<span class="level-num">${i}</span><span class="level-status">${won ? '⭐' : ''}</span>`;
       if (i <= maxReached && !atLimit) {
         btn.onclick = () => startLevel(i);
       }
       grid.appendChild(btn);
     }
 
+    document.getElementById('level-progress-fill').style.width = (maxReached / 6000 * 100) + '%';
+
+    // Update nav buttons
+    const prevBtn = document.getElementById('level-prev');
+    const nextBtn = document.getElementById('level-next');
+    const pageLabel = document.getElementById('level-page-label');
+    if (prevBtn) prevBtn.style.visibility = offset > 0 ? 'visible' : 'hidden';
+    if (nextBtn) nextBtn.style.visibility = endLvl < 6000 ? 'visible' : 'hidden';
+    if (pageLabel) pageLabel.textContent = `${startLvl}-${endLvl}关`;
+  }
+
+  function showLevelSelect() {
+    showScreen('level-select');
+    // Jump to the page containing current level
+    const targetLevel = Math.max(1, state.level);
+    levelPageOffset = Math.floor((targetLevel - 1) / LEVELS_PER_PAGE);
+    renderLevelPage(levelPageOffset);
+
     const hint = document.getElementById('level-hint');
+    const todayCount = state.todayLevels.length;
+    const atLimit = todayCount >= 30;
     hint.textContent = atLimit ? '已达今日30关上限，明日再来吧～' : `今日已挑战 ${todayCount}/30 关`;
     hint.style.display = isDaily ? 'none' : 'block';
+  }
+
+  function levelPageNav(dir) {
+    const maxPage = Math.floor((6000 - 1) / LEVELS_PER_PAGE);
+    levelPageOffset = Math.max(0, Math.min(maxPage, levelPageOffset + dir));
+    renderLevelPage(levelPageOffset);
+  }
+
+  function levelJumpTo(range) {
+    // range: 0=1-100, 1=101-500, 2=501-2000, 3=2001-6000
+    const jumps = [0, 100, 500, 2000];
+    levelPageOffset = Math.floor(jumps[range] / LEVELS_PER_PAGE);
+    renderLevelPage(levelPageOffset);
   }
 
   // ===== DAILY =====
