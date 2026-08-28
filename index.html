@@ -685,7 +685,6 @@ const Game = (() => {
         x: Math.max(-cardW * 0.3, Math.min(boardW - cardW * 0.7, pos.x)),
         y: Math.max(-cardH * 0.2, Math.min(boardH - cardH * 0.8, pos.y)),
         z: pos.z,
-        rot: (Math.random() - 0.5) * 12,
         removed: false,
         inSlot: false,
         slotIdx: -1
@@ -725,7 +724,7 @@ const Game = (() => {
       el.style.left = (card.x * scale + (boardW - 380 * scale) / 2) + 'px';
       el.style.top = (card.y * scale) + 'px';
       el.style.zIndex = card.z;
-      el.style.transform = `scale(${scale}) rotate(${card.rot || 0}deg)`;
+      el.style.transform = `scale(${scale})`;
 
       if (clickable) {
         el.addEventListener('click', () => onCardClick(card.id));
@@ -758,20 +757,21 @@ const Game = (() => {
 
   function isCardClickable(card) {
     if (card.removed || card.inSlot) return false;
-    // A card is clickable if no other card with higher z overlaps it
-    const CW = 50, CH = 66;
-    const overlapMargin = 6;
+    const CW = 46, CH = 60;
+    const overlapMargin = 4;
     for (let i = 0; i < cards.length; i++) {
       const other = cards[i];
       if (other.id === card.id) continue;
-      if (other.removed || other.inSlot) continue;
+      if (other.removed) continue;
+      // Slot cards don't block pile cards
+      if (other.inSlot) continue;
       if (other.z <= card.z) continue;
       // Check if other card overlaps this card
       if (card.x + CW - overlapMargin > other.x &&
           card.x + overlapMargin < other.x + CW &&
           card.y + CH - overlapMargin > other.y &&
           card.y + overlapMargin < other.y + CH) {
-        return false; // This card is covered
+        return false;
       }
     }
     return true;
@@ -1033,6 +1033,7 @@ const Game = (() => {
       toast('已移出3张牌', 's');
       renderSlots();
       renderBoard();
+      checkGameOver();
     }
   }
 
