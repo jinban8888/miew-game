@@ -53,7 +53,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
 .pause-btn{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 
-.board-area{position:absolute;width:100%;max-width:380px;left:50%;transform:translateX(-50%);top:50px;bottom:180px;z-index:1;background:linear-gradient(180deg,#FFF3E0 0%,#FFE8C8 100%);border-radius:12px}
+.board-area{position:absolute;width:100%;max-width:380px;left:50%;transform:translateX(-50%);top:50px;bottom:180px;z-index:1;background:linear-gradient(180deg,#FFF3E0 0%,#FFE8C8 100%);border-radius:12px;overflow:hidden}
 .card-stack{position:absolute;inset:0}
 
 /* Card design - PILE cards */
@@ -61,18 +61,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .card:active{transform:scale(0.93)}
 .card.disabled{pointer-events:none;opacity:0.35}
 /* Slot cards - bigger, same color as pile */
-.card.in-slot{position:relative;width:52px;height:68px;border-radius:11px;font-size:2rem;cursor:default;box-shadow:0 4px 12px rgba(0,0,0,0.22),0 2px 4px rgba(0,0,0,0.12);border:2.5px solid rgba(200,160,80,0.5)}
+.card.in-slot{position:relative;width:52px;height:68px;border-radius:11px;font-size:2rem;cursor:default;box-shadow:0 4px 12px rgba(0,0,0,0.22),0 2px 4px rgba(0,0,0,0.12);border-width:2.5px;border-style:solid}
 .card.in-slot:active{transform:none}
 
-/* Card emoji types - each type gets a unique background */
-.card[data-type="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0)}
-.card[data-type="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF)}
-.card[data-type="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8)}
-.card[data-type="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8)}
-.card[data-type="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF)}
-.card[data-type="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8)}
-.card[data-type="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8)}
-.card[data-type="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4)}
+/* Card emoji types - each type gets a unique background (applies to both pile and slot) */
+.card[data-type="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0);border-color:#FFBABA}
+.card[data-type="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF);border-color:#BAE4FF}
+.card[data-type="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8);border-color:#BAF5C4}
+.card[data-type="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8);border-color:#FFD8A0}
+.card[data-type="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF);border-color:#D8BAFF}
 .card[data-type="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8);border-color:#FFF0A0}
 .card[data-type="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8);border-color:#BAFFF0}
 .card[data-type="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4);border-color:#FFBAE0}
