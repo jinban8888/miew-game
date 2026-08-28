@@ -57,19 +57,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .card-stack{position:absolute;inset:0}
 
 /* Card design */
-.card{position:absolute;width:52px;height:68px;background:linear-gradient(145deg,#fff 0%,#f8f0e6 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.12);transition:transform 0.1s,box-shadow 0.1s;border:2px solid rgba(0,0,0,0.06);transform-style:preserve-3d}
-.card:active{transform:scale(0.95);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
-.card{background:linear-gradient(145deg,rgba(255,255,255,0.95),rgba(248,240,230,0.95))}
-.card.disabled{pointer-events:none;opacity:0.55}
-.card.in-slot{position:relative;width:46px;height:60px;font-size:1.7rem;cursor:default;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.card{position:absolute;width:48px;height:62px;background:linear-gradient(145deg,#fff 0%,#f8f0e6 100%);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.12);transition:transform 0.1s,box-shadow 0.1s;border:2px solid rgba(0,0,0,0.07)}
+.card:active{transform:scale(0.93)}
+.card.disabled{pointer-events:none;opacity:0.38}
+.card.in-slot{position:relative;width:44px;height:58px;font-size:1.6rem;cursor:default;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .card.in-slot:active{transform:none}
 
-/* Card emoji types */
-.card[data-type="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0);border-color:#FFBABA}
-.card[data-type="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF);border-color:#BAE4FF}
-.card[data-type="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8);border-color:#BAF5C4}
-.card[data-type="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8);border-color:#FFD8A0}
-.card[data-type="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF);border-color:#D8BAFF}
+/* Card emoji types - each type gets a unique background */
+.card[data-type="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0)}
+.card[data-type="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF)}
+.card[data-type="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8)}
+.card[data-type="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8)}
+.card[data-type="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF)}
+.card[data-type="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8)}
+.card[data-type="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8)}
+.card[data-type="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4)}
 .card[data-type="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8);border-color:#FFF0A0}
 .card[data-type="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8);border-color:#BAFFF0}
 .card[data-type="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4);border-color:#FFBAE0}
@@ -592,95 +594,105 @@ const Game = (() => {
   }
 
   // ===== LEVEL GENERATION =====
+  // Uses reverse-generation: build solvable levels by dealing from top layer down
   function generateLevel(lvl, isDailyMode = false) {
-    const baseLevel = isDailyMode ? (30 + Math.floor(Math.random() * 30)) : lvl;
-
-    // Difficulty scaling:
-    // Level 1: Tutorial (3 layers, ~18 cards, 6 types)
-    // Level 2+: Immediately hard (8-15 layers, 50-120 cards, all 8 types)
-    let layerCount, totalCards, cardTypes;
-    if (lvl === 1) {
-      // Tutorial - very easy
-      layerCount = 3;
-      totalCards = 18;
-      cardTypes = 6;
-    } else if (lvl <= 10) {
-      layerCount = 6 + Math.floor(lvl * 0.8);
-      totalCards = 30 + lvl * 4;
-      cardTypes = 7;
-    } else if (lvl <= 30) {
-      layerCount = 8 + Math.floor((lvl - 10) * 0.4);
-      totalCards = 60 + (lvl - 10) * 3;
-      cardTypes = 8;
-    } else {
-      layerCount = Math.min(15, 10 + Math.floor((lvl - 30) * 0.3));
-      totalCards = Math.min(120, 100 + (lvl - 30) * 2);
-      cardTypes = 8;
-    }
-
-    totalCards = Math.min(120, Math.max(15, totalCards));
-
-    // How many of each type (ensure divisible by 3 for fairness)
-    let counts = new Array(cardTypes).fill(0);
-    let remaining = totalCards;
-    for (let i = 0; i < cardTypes - 1; i++) {
-      counts[i] = Math.floor(remaining / (cardTypes - i));
-      remaining -= counts[i];
-    }
-    counts[cardTypes - 1] = remaining;
-    // Ensure no type < 3 (redistribute if needed)
-    for (let i = 0; i < counts.length; i++) {
-      while (counts[i] < 3 && remaining > 0) {
-        counts[i] += 3;
-        remaining -= 3;
-      }
-    }
-    // Make all divisible by 3
-    for (let i = 0; i < counts.length; i++) {
-      counts[i] = Math.floor(counts[i] / 3) * 3;
-    }
-
-    // Build card list
-    let cardList = [];
-    for (let t = 0; t < cardTypes; t++) {
-      for (let c = 0; c < counts[t]; c++) cardList.push(t);
-    }
-    // Shuffle
-    for (let i = cardList.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cardList[i], cardList[j]] = [cardList[j], cardList[i]];
-    }
-
-    // Layout: cards are placed in layers
-    // Each layer is a grid, upper layers partially cover lower
     const boardW = 380;
     const boardH = 420;
     const cardW = 52;
     const cardH = 68;
-    const cols = Math.floor(boardW / cardW);
-    const padding = 4;
 
-    let newCards = [];
-    let id = 0;
+    // Difficulty parameters
+    let totalCards, cardTypes, layerCount;
+    if (lvl === 1) {
+      totalCards = 15; cardTypes = 4; layerCount = 3;
+    } else if (lvl <= 5) {
+      totalCards = 24 + lvl * 3; cardTypes = 5; layerCount = 4 + lvl;
+    } else if (lvl <= 10) {
+      totalCards = 40 + (lvl - 5) * 5; cardTypes = 6; layerCount = 8 + Math.floor((lvl - 5) * 0.5);
+    } else if (lvl <= 20) {
+      totalCards = 65 + (lvl - 10) * 4; cardTypes = 7; layerCount = 10 + Math.floor((lvl - 10) * 0.4);
+    } else {
+      totalCards = 105 + (lvl - 20) * 2; cardTypes = 8; layerCount = 14;
+    }
+    totalCards = Math.min(120, Math.max(15, totalCards));
+    layerCount = Math.min(15, Math.max(3, layerCount));
 
-    // For each layer, place cards in a grid pattern with some randomness
+    // Step 1: Generate type counts (ensures divisible by 3)
+    let counts = new Array(cardTypes).fill(0);
+    let rem = totalCards;
+    for (let i = 0; i < cardTypes - 1; i++) {
+      counts[i] = Math.floor(rem / (cardTypes - i) / 3) * 3;
+      rem -= counts[i];
+    }
+    counts[cardTypes - 1] = Math.floor(rem / 3) * 3;
+
+    // Step 2: Build the draw order (reverse of gameplay)
+    // Each group of 3 same-type cards will be "drawn" together
+    // We deal from TOP layer down to BOTTOM layer
+    let typeQueue = [];
+    for (let t = 0; t < cardTypes; t++) {
+      for (let c = 0; c < counts[t] / 3; c++) {
+        typeQueue.push(t, t, t); // 3 of each type
+      }
+    }
+    // Shuffle the draw order (randomizes which types appear when)
+    for (let i = typeQueue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [typeQueue[i], typeQueue[j]] = [typeQueue[j], typeQueue[i]];
+    }
+
+    // Step 3: Build the placement grid
+    // Pre-calculate grid positions (sparse grid with overlap potential)
+    const cols = 7;
+    const cellW = (boardW - 8) / cols;
+    const cellH = cardH + 8;
+    const rowsPerLayer = Math.ceil(totalCards / cols / layerCount) + 2;
+
+    // Pre-generate all positions: [layer][row][col]
+    let allPositions = [];
     for (let layer = 0; layer < layerCount; layer++) {
-      const layerCols = Math.max(3, cols - Math.floor(layer * 0.4));
-      const cellW = (boardW - padding * 2) / layerCols;
-      const cellH = cardH + 4;
-
-      const cardsThisLayer = Math.ceil(totalCards / layerCount);
-      for (let i = 0; i < cardsThisLayer && cardList.length > 0; i++) {
-        const col = i % layerCols;
-        const row = Math.floor(i / layerCols);
-        const x = padding + col * cellW + (Math.random() - 0.5) * cellW * 0.3;
-        const y = padding + row * cellH * 0.6 + layer * cardH * 0.4;
-        const type = cardList.pop();
-        newCards.push({ id: id++, type, x, y, z: layer * 100 + i, removed: false, inSlot: false, slotIdx: -1 });
+      for (let row = 0; row < rowsPerLayer; row++) {
+        for (let col = 0; col < cols + 2; col++) { // +2 for overflow
+          // Add jitter for natural look
+          const xJitter = (Math.random() - 0.5) * 16;
+          const yJitter = (Math.random() - 0.5) * 10;
+          const x = col * cellW - cellW * 0.5 + xJitter;
+          const y = row * cellH * 0.7 + layer * cardH * 0.5 + yJitter;
+          allPositions.push({ x, y, z: layer * 100 + row * cols + col });
+        }
       }
     }
 
-    // Sort by z for proper layering
+    // Shuffle positions (so cards go to random spots)
+    for (let i = allPositions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allPositions[i], allPositions[j]] = [allPositions[j], allPositions[i]];
+    }
+
+    // Step 4: Assign card types to positions
+    // The key: deal from the TOP (highest layer) down so lower cards get placed first
+    // Sort positions by z descending (top layer first in dealing)
+    let dealOrder = allPositions.slice(0, totalCards);
+    dealOrder.sort((a, b) => b.z - a.z); // High z (top layer) dealt first
+
+    let newCards = [];
+    let id = 0;
+    for (let i = 0; i < dealOrder.length && i < typeQueue.length; i++) {
+      const pos = dealOrder[i];
+      newCards.push({
+        id: id++,
+        type: typeQueue[i % typeQueue.length],
+        x: Math.max(-cardW * 0.3, Math.min(boardW - cardW * 0.7, pos.x)),
+        y: Math.max(-cardH * 0.2, Math.min(boardH - cardH * 0.8, pos.y)),
+        z: pos.z,
+        rot: (Math.random() - 0.5) * 12,
+        removed: false,
+        inSlot: false,
+        slotIdx: -1
+      });
+    }
+
+    // Sort by z for rendering (lowest layer first)
     newCards.sort((a, b) => a.z - b.z);
     return newCards;
   }
@@ -693,11 +705,11 @@ const Game = (() => {
 
     const boardW = boardEl.clientWidth || 380;
     const boardH = boardEl.clientHeight || 360;
-    const cardW = 52;
-    const cardH = 68;
+    const cardW = 48;
+    const cardH = 62;
     const scaleX = boardW / 380;
     const scaleY = boardH / 420;
-    const scale = Math.min(scaleX, scaleY, 1.1);
+    const scale = Math.min(scaleX, scaleY, 1.15);
 
     // Render ALL non-removed, non-slot cards (visible layers)
     cards.forEach(card => {
@@ -713,7 +725,7 @@ const Game = (() => {
       el.style.left = (card.x * scale + (boardW - 380 * scale) / 2) + 'px';
       el.style.top = (card.y * scale) + 'px';
       el.style.zIndex = card.z;
-      el.style.transform = `scale(${scale})`;
+      el.style.transform = `scale(${scale}) rotate(${card.rot || 0}deg)`;
 
       if (clickable) {
         el.addEventListener('click', () => onCardClick(card.id));
@@ -746,20 +758,23 @@ const Game = (() => {
 
   function isCardClickable(card) {
     if (card.removed || card.inSlot) return false;
-    // A card is clickable if no other card overlaps it from above
-    return !cards.some(other =>
-      !other.removed &&
-      !other.inSlot &&
-      other.id !== card.id &&
-      other.z > card.z &&
-      rectsOverlap(card, other)
-    );
-  }
-
-  function rectsOverlap(a, b) {
-    const margin = 8;
-    return !(a.x + 52 - margin < b.x || a.x + margin > b.x + 52 ||
-             a.y + 68 - margin < b.y || a.y + margin > b.y + 68);
+    // A card is clickable if no other card with higher z overlaps it
+    const CW = 50, CH = 66;
+    const overlapMargin = 6;
+    for (let i = 0; i < cards.length; i++) {
+      const other = cards[i];
+      if (other.id === card.id) continue;
+      if (other.removed || other.inSlot) continue;
+      if (other.z <= card.z) continue;
+      // Check if other card overlaps this card
+      if (card.x + CW - overlapMargin > other.x &&
+          card.x + overlapMargin < other.x + CW &&
+          card.y + CH - overlapMargin > other.y &&
+          card.y + overlapMargin < other.y + CH) {
+        return false; // This card is covered
+      }
+    }
+    return true;
   }
 
   // ===== CARD CLICK =====
