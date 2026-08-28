@@ -763,10 +763,17 @@ const Game = (() => {
     const scale = Math.min(scaleX, scaleY, 1.0);
 
     // Render ALL non-removed, non-slot cards (visible layers)
+    // Pre-calculate which cards are clickable (accounts for scale)
+    const clickableMap = new Map();
+    cards.forEach(card => {
+      if (card.removed || card.inSlot) return;
+      clickableMap.set(card.id, isCardClickableWithScale(card, scale));
+    });
+
     cards.forEach(card => {
       if (card.removed || card.inSlot) return;
 
-      const clickable = isCardClickable(card);
+      const clickable = clickableMap.get(card.id);
 
       const el = document.createElement('div');
       el.className = 'card' + (clickable ? '' : ' disabled');
@@ -807,18 +814,17 @@ const Game = (() => {
     }
   }
 
-  function isCardClickable(card) {
+  function isCardClickableWithScale(card, scale) {
     if (card.removed || card.inSlot) return false;
-    const CW = 46, CH = 60;
-    const overlapMargin = 4;
+    // Account for CSS scale in overlap detection
+    const CW = 46 * scale, CH = 60 * scale;
+    const overlapMargin = 3;
     for (let i = 0; i < cards.length; i++) {
       const other = cards[i];
       if (other.id === card.id) continue;
       if (other.removed) continue;
-      // Slot cards don't block pile cards
       if (other.inSlot) continue;
       if (other.z <= card.z) continue;
-      // Check if other card overlaps this card
       if (card.x + CW - overlapMargin > other.x &&
           card.x + overlapMargin < other.x + CW &&
           card.y + CH - overlapMargin > other.y &&
@@ -827,6 +833,9 @@ const Game = (() => {
       }
     }
     return true;
+  }
+  function isCardClickable(card) {
+    return isCardClickableWithScale(card, 1.0);
   }
 
   // ===== CARD CLICK =====
