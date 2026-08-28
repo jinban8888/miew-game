@@ -406,6 +406,7 @@ const THEMES = ['theme-spring','theme-desert','theme-night','theme-sunset'];
 const Game = (() => {
   // State
   let S = { level:1, gold:0, frags:0, owned:[0], equip:0, totalWin:0, todayWin:0, todayLvls:[], adLeft:2, bt:{} };
+  let _lastSavedLevel = 1; // Track level to detect illegal jumps
   let pile = [], slots = [null,null,null,null,null,null,null];
   let tools = {shuffle:2, undo:3, remove:1};
   let steps = 0, toolUsed = 0, sec = 0, tInt = null, active = false, paused = false, daily = false, matching = false;
