@@ -59,7 +59,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 /* Card design */
 .card{position:absolute;width:52px;height:68px;background:linear-gradient(145deg,#fff 0%,#f8f0e6 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.12);transition:transform 0.1s,box-shadow 0.1s;border:2px solid rgba(0,0,0,0.06);transform-style:preserve-3d}
 .card:active{transform:scale(0.95);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
-.card.disabled{pointer-events:none;opacity:0.5}
+.card{background:linear-gradient(145deg,rgba(255,255,255,0.95),rgba(248,240,230,0.95))}
+.card.disabled{pointer-events:none;opacity:0.55}
 .card.in-slot{position:relative;width:46px;height:60px;font-size:1.7rem;cursor:default;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
 .card.in-slot:active{transform:none}
 
@@ -593,9 +594,31 @@ const Game = (() => {
   // ===== LEVEL GENERATION =====
   function generateLevel(lvl, isDailyMode = false) {
     const baseLevel = isDailyMode ? (30 + Math.floor(Math.random() * 30)) : lvl;
-    const layerCount = Math.min(15, 3 + Math.floor(baseLevel / 8));
-    const cardTypes = 8;
-    const totalCards = Math.min(120, 12 + baseLevel * 2);
+
+    // Difficulty scaling:
+    // Level 1: Tutorial (3 layers, ~18 cards, 6 types)
+    // Level 2+: Immediately hard (8-15 layers, 50-120 cards, all 8 types)
+    let layerCount, totalCards, cardTypes;
+    if (lvl === 1) {
+      // Tutorial - very easy
+      layerCount = 3;
+      totalCards = 18;
+      cardTypes = 6;
+    } else if (lvl <= 10) {
+      layerCount = 6 + Math.floor(lvl * 0.8);
+      totalCards = 30 + lvl * 4;
+      cardTypes = 7;
+    } else if (lvl <= 30) {
+      layerCount = 8 + Math.floor((lvl - 10) * 0.4);
+      totalCards = 60 + (lvl - 10) * 3;
+      cardTypes = 8;
+    } else {
+      layerCount = Math.min(15, 10 + Math.floor((lvl - 30) * 0.3));
+      totalCards = Math.min(120, 100 + (lvl - 30) * 2);
+      cardTypes = 8;
+    }
+
+    totalCards = Math.min(120, Math.max(15, totalCards));
 
     // How many of each type (ensure divisible by 3 for fairness)
     let counts = new Array(cardTypes).fill(0);
@@ -642,8 +665,7 @@ const Game = (() => {
 
     // For each layer, place cards in a grid pattern with some randomness
     for (let layer = 0; layer < layerCount; layer++) {
-      const layerCols = cols - Math.floor(layer * 0.3);
-      const layerRows = Math.ceil(totalCards / layerCount / layerCols);
+      const layerCols = Math.max(3, cols - Math.floor(layer * 0.4));
       const cellW = (boardW - padding * 2) / layerCols;
       const cellH = cardH + 4;
 
@@ -652,7 +674,7 @@ const Game = (() => {
         const col = i % layerCols;
         const row = Math.floor(i / layerCols);
         const x = padding + col * cellW + (Math.random() - 0.5) * cellW * 0.3;
-        const y = padding + row * cellH * 0.5 + layer * cardH * 0.35;
+        const y = padding + row * cellH * 0.6 + layer * cardH * 0.4;
         const type = cardList.pop();
         newCards.push({ id: id++, type, x, y, z: layer * 100 + i, removed: false, inSlot: false, slotIdx: -1 });
       }
@@ -677,12 +699,14 @@ const Game = (() => {
     const scaleY = boardH / 420;
     const scale = Math.min(scaleX, scaleY, 1.1);
 
+    // Render ALL non-removed, non-slot cards (visible layers)
     cards.forEach(card => {
       if (card.removed || card.inSlot) return;
-      if (!isCardClickable(card)) return;
+
+      const clickable = isCardClickable(card);
 
       const el = document.createElement('div');
-      el.className = 'card';
+      el.className = 'card' + (clickable ? '' : ' disabled');
       el.dataset.id = card.id;
       el.dataset.type = card.type;
       el.textContent = CARD_EMOJIS[card.type];
@@ -690,12 +714,16 @@ const Game = (() => {
       el.style.top = (card.y * scale) + 'px';
       el.style.zIndex = card.z;
       el.style.transform = `scale(${scale})`;
-      el.addEventListener('click', () => onCardClick(card.id));
-      el.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        Audio.playClick();
-        onCardClick(card.id);
-      }, { passive: false });
+
+      if (clickable) {
+        el.addEventListener('click', () => onCardClick(card.id));
+        el.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          Audio.playClick();
+          onCardClick(card.id);
+        }, { passive: false });
+      }
+
       stackEl.appendChild(el);
     });
   }
