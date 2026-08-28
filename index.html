@@ -6,15 +6,7 @@
 <title>咩了个咩 - 羊羊消除闯关</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --primary:#FF9A3D;
-  --primary2:#E8850A;
-  --bg:#FFF8F0;
-  --text:#4A3728;
-  --slot-bg:#F0E6D3;
-  --card-shadow:0 4px 12px rgba(0,0,0,0.15);
-  --safe:env(safe-area-inset-bottom,0px);
-}
+:root{--primary:#FF9A3D;--primary2:#E8850A;--bg:#FFF8F0;--text:#4A3728;--slot-bg:#F0E6D3;--safe:env(safe-area-inset-bottom,0px)}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;user-select:none}
 
 /* ===== SCREENS ===== */
@@ -22,67 +14,64 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .screen.active{display:flex}
 
 /* ===== HOME ===== */
-#home{flex-direction:column;gap:16px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
-.game-title{font-size:2.8rem;font-weight:900;color:var(--primary);text-shadow:3px 3px 0 #fff,5px 5px 0 rgba(0,0,0,0.1);letter-spacing:2px;margin-top:10px}
-.game-subtitle{font-size:1rem;color:#8B7355;margin-top:-8px;letter-spacing:4px}
-.sheep-mascot{font-size:6rem;line-height:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.15));animation:float 3s ease-in-out infinite}
+#home{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
+.game-title{font-size:2.8rem;font-weight:900;color:var(--primary);text-shadow:3px 3px 0 #fff,5px 5px 0 rgba(0,0,0,0.1);letter-spacing:2px}
+.game-subtitle{font-size:1rem;color:#8B7355;letter-spacing:4px}
+.sheep-mascot{font-size:6rem;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.15));animation:float 3s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-
 .btn-start{width:220px;height:60px;background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;font-size:1.3rem;font-weight:800;border:none;border-radius:30px;cursor:pointer;box-shadow:0 6px 0 #C46A00,0 8px 20px rgba(255,154,61,0.4);transition:all 0.1s;letter-spacing:2px}
-.btn-start:active{transform:translateY(4px);box-shadow:0 2px 0 #C46A00,0 4px 10px rgba(255,154,61,0.3)}
-
+.btn-start:active{transform:translateY(4px);box-shadow:0 2px 0 #C46A00}
 .home-cards{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:360px}
 .home-card{background:#fff;border-radius:16px;padding:14px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.08);cursor:pointer;transition:transform 0.15s;text-align:center;min-width:100px;border:2px solid transparent}
 .home-card:active{transform:scale(0.96)}
 .home-card.highlight{border-color:var(--primary);background:#FFF3E0}
 .home-card-icon{font-size:1.8rem}
 .home-card-label{font-size:0.75rem;color:#8B7355;margin-top:4px}
-.home-card-value{font-size:1.1rem;font-weight:700;color:var(--text);margin-top:2px}
-
+.home-card-value{font-size:1.1rem;font-weight:700}
 .stats-row{display:flex;gap:20px;justify-content:center;margin:4px 0}
 .stat-item{text-align:center}
 .stat-val{font-size:1.4rem;font-weight:800;color:var(--primary)}
 .stat-lbl{font-size:0.7rem;color:#8B7355}
 
 /* ===== GAME ===== */
-#game{flex-direction:column;padding:12px;gap:8px;justify-content:flex-start;position:relative;isolation:isolate}
+#game{flex-direction:column;padding:10px;gap:6px;justify-content:flex-start;position:relative}
 .game-hud{flex-direction:row;width:100%;display:flex;align-items:center;justify-content:space-between;padding:4px 8px}
 .hud-left{display:flex;align-items:center;gap:8px}
 .hud-level{background:var(--primary);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.85rem;font-weight:700}
 .hud-timer{font-size:0.85rem;color:#8B7355;font-weight:600}
-
 .pause-btn{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 
-.board-area{position:absolute;width:100%;max-width:380px;left:50%;transform:translateX(-50%);top:50px;bottom:180px;z-index:1;background:linear-gradient(180deg,#FFF3E0 0%,#FFE8C8 100%);border-radius:12px;transition:background 0.8s}
-@media(min-width:768px){#game .board-area{max-width:55vmin;top:50%;transform:translate(-50%,-50%);height:55vmin;bottom:auto}}
-.card-stack{position:absolute;inset:0}
+.board-area{position:relative;width:100%;max-width:380px;height:calc(100vh - 270px);min-height:260px;border-radius:12px;overflow:hidden;margin:0 auto}
 
-/* Card design - PILE cards */
-.card{position:absolute;width:48px;height:62px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,0.18),0 1px 2px rgba(0,0,0,0.1);transition:transform 0.1s,box-shadow 0.1s;border:2px solid rgba(0,0,0,0.08)}
-.card:active{transform:scale(0.93)}
-.card.disabled{pointer-events:none;opacity:0.35}
-/* Slot cards - bigger, same color as pile */
-.card.in-slot{position:relative;width:52px;height:68px;border-radius:11px;font-size:2rem;cursor:default;box-shadow:0 4px 12px rgba(0,0,0,0.22),0 2px 4px rgba(0,0,0,0.12);border-width:2.5px;border-style:solid}
-.card.in-slot:active{transform:none}
+/* Cards in pile */
+.pc{position:absolute;width:46px;height:60px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.75rem;cursor:pointer;transition:transform 0.08s;box-shadow:0 2px 6px rgba(0,0,0,0.15);border:2px solid rgba(0,0,0,0.07)}
+.pc:active{transform:scale(0.93)}
+.pc:hover{transform:scale(0.97)}
+.pc.blocked{pointer-events:none;opacity:0.35;cursor:not-allowed}
+.pc[data-t="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0)}
+.pc[data-t="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF)}
+.pc[data-t="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8)}
+.pc[data-t="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8)}
+.pc[data-t="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF)}
+.pc[data-t="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8)}
+.pc[data-t="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8)}
+.pc[data-t="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4)}
 
-/* Card emoji types - each type gets a unique background (applies to both pile and slot) */
-.card[data-type="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0);border-color:#FFBABA}
-.card[data-type="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF);border-color:#BAE4FF}
-.card[data-type="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8);border-color:#BAF5C4}
-.card[data-type="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8);border-color:#FFD8A0}
-.card[data-type="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF);border-color:#D8BAFF}
-.card[data-type="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8);border-color:#FFF0A0}
-.card[data-type="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8);border-color:#BAFFF0}
-.card[data-type="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4);border-color:#FFBAE0}
+/* Slots */
+.slot-row{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.sc{width:50px;height:64px;background:rgba(240,230,211,0.3);border-radius:10px;border:2px dashed #D4C4A8;display:flex;align-items:center;justify-content:center;font-size:1.9rem;transition:background 0.15s}
+.sc.filled{background:transparent;border-style:solid;border-color:#C4A870;box-shadow:0 3px 8px rgba(0,0,0,0.12)}
+.sc[data-t="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0) !important}
+.sc[data-t="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF) !important}
+.sc[data-t="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8) !important}
+.sc[data-t="3"]{background:linear-gradient(145deg,#FFF4E4,#FFE8C8) !important}
+.sc[data-t="4"]{background:linear-gradient(145deg,#F4E4FF,#E8D0FF) !important}
+.sc[data-t="5"]{background:linear-gradient(145deg,#FFFDE4,#FFF8C8) !important}
+.sc[data-t="6"]{background:linear-gradient(145deg,#E4FFF4,#D0FFE8) !important}
+.sc[data-t="7"]{background:linear-gradient(145deg,#FFE4F0,#FFD0E4) !important}
 
-/* Slot area */
-.slot-area{width:100%;max-width:380px;display:flex;flex-direction:column;gap:8px;position:absolute;bottom:60px;left:50%;transform:translateX(-50%);width:100%;max-width:380px;z-index:100}
-.slot-row{display:flex;justify-content:center;gap:6px}
-.slot{width:52px;height:68px;background:rgba(240,230,211,0.3);border-radius:11px;border:2px dashed #D4C4A8;display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative;overflow:hidden}
-.slot.filled{background:transparent;border-style:solid;border-color:#C4A870;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
-
-/* Tool bar */
-.toolbar{display:flex;justify-content:center;gap:16px;margin-top:6px}
+/* Toolbar */
+.toolbar{display:flex;justify-content:center;gap:14px}
 .tool-btn{flex:1;max-width:110px;background:#fff;border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.08);border:2px solid transparent;transition:all 0.15s;min-width:90px}
 .tool-btn:active{transform:scale(0.96)}
 .tool-btn.disabled{opacity:0.5;pointer-events:none}
@@ -91,8 +80,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .tool-name{font-size:0.65rem;color:#8B7355}
 .tool-count{font-size:0.7rem;font-weight:700;color:var(--primary)}
 
-/* ===== WINSCR ===== */
-#winscr{flex-direction:column;gap:16px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
+/* ===== WIN ===== */
+#winscr{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
 .win-badge{font-size:5rem;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275)}
 @keyframes popIn{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 .win-title{font-size:2rem;font-weight:900;color:var(--primary)}
@@ -104,26 +93,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .win-reward{display:flex;align-items:center;gap:16px;background:#FFF3E0;padding:10px 20px;border-radius:12px;font-size:1rem;font-weight:700}
 .reward-icon{font-size:1.6rem}
 .win-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.btn-secondary{height:48px;padding:0 24px;background:#fff;border:2px solid var(--primary);color:var(--primary);border-radius:24px;font-size:1rem;font-weight:700;cursor:pointer}
 .btn-primary-share{height:48px;padding:0 24px;background:var(--primary);color:#fff;border:none;border-radius:24px;font-size:1rem;font-weight:700;cursor:pointer}
+.btn-secondary{height:48px;padding:0 24px;background:#fff;border:2px solid var(--primary);color:var(--primary);border-radius:24px;font-size:1rem;font-weight:700;cursor:pointer}
 
-/* ===== LOSESCR ===== */
+/* ===== LOSE ===== */
 #losescr{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
 .lose-sheep{font-size:5rem;opacity:0.9}
 .lose-title{font-size:1.8rem;font-weight:900;color:#888}
 .lose-reason{font-size:0.85rem;color:#8B7355;text-align:center;max-width:280px}
 .lose-btns{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:300px}
-.btn-revive{width:100%;height:52px;background:#FF5252;color:#fff;border:none;border-radius:26px;font-size:1.1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-revive-ad{background:linear-gradient(135deg,#FF5252,#D32F2F)}
+.btn-revive{width:100%;height:52px;border-radius:26px;font-size:1.1rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border:none}
+.btn-revive-ad{background:#FF5252;color:#fff}
 .btn-revive-gold{background:#fff;color:var(--text);border:2px solid #DDD}
 .btn-restart{width:100%;height:48px;background:var(--primary);color:#fff;border:none;border-radius:24px;font-size:1rem;font-weight:700;cursor:pointer}
 .btn-back{width:100%;height:44px;background:transparent;color:#8B7355;border:none;font-size:0.9rem;cursor:pointer}
 
 /* ===== SKINS ===== */
 #skins{flex-direction:column;gap:10px;padding:12px}
-.skins-header{flex-direction:row;width:100%;display:flex;align-items:center;justify-content:space-between;padding:4px 8px}
+.skins-header{flex-direction:row;width:100%;max-width:380px;display:flex;align-items:center;justify-content:space-between}
 .skins-back{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-.skins-title{font-size:1.2rem;font-weight:800;color:var(--text)}
+.skins-title{font-size:1.2rem;font-weight:800}
 .skins-info{display:flex;align-items:center;gap:6px;font-size:0.85rem;color:#8B7355}
 .skin-progress-wrap{width:100%;max-width:380px;background:#E8DCC8;border-radius:10px;height:10px;overflow:hidden}
 .skin-progress{height:100%;background:linear-gradient(90deg,var(--primary),#FFD700);border-radius:10px;transition:width 0.5s}
@@ -133,21 +122,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .skin-item:active{transform:scale(0.95)}
 .skin-item.owned{border-color:#4CAF50;background:#F1F8E9}
 .skin-item.equipped{border-color:var(--primary);background:#FFF8E1}
-.skin-item.locked{opacity:0.7}
-.skin-emoji{font-size:2.2rem;line-height:1}
+.skin-emoji{font-size:2.2rem}
 .skin-name{font-size:0.6rem;color:#8B7355;text-align:center}
 .skin-cost{font-size:0.65rem;font-weight:700;color:var(--primary)}
-.skin-status-badge{font-size:0.55rem;padding:1px 5px;border-radius:8px}
-.skin-status-badge.owned{background:#E8F5E9;color:#4CAF50}
-.skin-status-badge.equipped{background:#FFF3E0;color:var(--primary)}
 
-/* ===== PAUSE OVERLAY ===== */
+/* ===== LEVEL SELECT ===== */
+#level-select{flex-direction:column;gap:12px;padding:16px}
+.level-header{flex-direction:row;width:100%;max-width:380px;display:flex;align-items:center;justify-content:space-between}
+.level-back{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.level-title{font-size:1.2rem;font-weight:800}
+.level-progress-bar{width:100%;max-width:380px;background:#E8DCC8;border-radius:8px;height:8px}
+.level-progress-fill{height:100%;background:var(--primary);border-radius:8px;transition:width 0.3s}
+.level-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.level-nav-btn{height:34px;padding:0 14px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer;font-size:0.75rem;font-weight:700}
+.level-page-row{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px}
+.level-page-btn{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.level-page-lbl{font-size:0.8rem;color:#8B7355;font-weight:600}
+.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:400px;overflow-y:auto;flex:1}
+.level-btn{aspect-ratio:1;background:#fff;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;font-weight:700;font-size:1.1rem;color:var(--text);transition:all 0.15s}
+.level-btn:active{transform:scale(0.95)}
+.level-btn.current{border-color:var(--primary);background:#FFF8E1}
+.level-btn.locked{background:#F5F0E8;color:#AAA;cursor:not-allowed}
+.level-btn.locked:active{transform:none}
+.level-num{font-size:1rem}
+.level-status{font-size:0.6rem}
+.level-hint{padding:8px;text-align:center;color:#8B7355;font-size:0.8rem}
+
+/* ===== PAUSE ===== */
 #pause-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:16px}
 #pause-overlay.active{display:flex}
 .pause-box{background:#fff;border-radius:20px;padding:30px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:280px}
-.pause-title{font-size:1.5rem;font-weight:800;color:var(--text)}
-.pause-btn-item{width:100%;height:50px;background:var(--primary);color:#fff;border:none;border-radius:25px;font-size:1rem;font-weight:700;cursor:pointer}
+.pause-title{font-size:1.5rem;font-weight:800}
+.pause-btn-item{width:100%;height:50px;border-radius:25px;font-size:1rem;font-weight:700;cursor:pointer;border:none}
 .pause-btn-resume{background:#fff;color:var(--primary);border:2px solid var(--primary)}
+
+/* ===== SETTINGS ===== */
+#settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:900;padding:20px}
+#settings-overlay.active{display:flex}
+.settings-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px}
+.settings-title{font-size:1.2rem;font-weight:800;text-align:center}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0E6D3}
+.setting-lbl{font-size:0.95rem}
+.toggle{width:44px;height:24px;background:#DDD;border-radius:12px;position:relative;cursor:pointer;border:none;transition:background 0.2s}
+.toggle.on{background:var(--primary)}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle.on::after{transform:translateX(20px)}
+.settings-close{width:100%;height:44px;background:var(--primary);color:#fff;border:none;border-radius:22px;font-size:1rem;font-weight:700;cursor:pointer}
 
 /* ===== TOAST ===== */
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(50,40,30,0.85);color:#fff;padding:10px 20px;border-radius:25px;font-size:0.9rem;z-index:2000;transition:transform 0.3s;pointer-events:none;white-space:nowrap}
@@ -155,47 +175,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 #toast.success{background:rgba(76,175,80,0.9)}
 #toast.error{background:rgba(244,67,54,0.9)}
 
-/* ===== SETTINGS MODAL ===== */
-#settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:900;padding:20px}
-#settings-overlay.active{display:flex}
-.settings-box{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:16px}
-.settings-title{font-size:1.2rem;font-weight:800;text-align:center}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0E6D3}
-.setting-lbl{font-size:0.95rem;color:var(--text)}
-.toggle{width:44px;height:24px;background:#DDD;border-radius:12px;position:relative;cursor:pointer;border:none;transition:background 0.2s}
-.toggle.on{background:var(--primary)}
-.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
-.toggle.on::after{transform:translateX(20px)}
-.settings-close{width:100%;height:44px;background:var(--primary);color:#fff;border:none;border-radius:22px;font-size:1rem;font-weight:700;cursor:pointer}
-
 /* ===== CONFETTI ===== */
 @keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 .confetti{position:fixed;top:-20px;font-size:1.5rem;z-index:3000;pointer-events:none;animation:confetti-fall 3s linear forwards}
 
-/* ===== LEVEL SELECT ===== */
-#level-select{flex-direction:column;gap:14px;padding:16px}
-.level-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:380px}
-.level-back{width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-.level-title{font-size:1.2rem;font-weight:800}
-.level-progress-bar{width:100%;max-width:380px;background:#E8DCC8;border-radius:8px;height:8px}
-.level-progress-fill{height:100%;background:var(--primary);border-radius:8px;transition:width 0.3s}
-.level-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:100%;max-width:400px;overflow-y:auto;flex:1}
-.level-btn{aspect-ratio:1;background:#fff;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:2px solid transparent;font-weight:700;font-size:1.1rem;color:var(--text);transition:all 0.15s;gap:2px}
-.level-btn:active{transform:scale(0.95)}
-.level-btn.current{border-color:var(--primary);background:#FFF8E1}
-.level-btn.locked{background:#F5F0E8;color:#AAA;cursor:not-allowed}
-.level-btn.locked:active{transform:none}
-.level-num{font-size:1rem}
-.level-status{font-size:0.6rem}
+/* ===== THEME BACKGROUNDS ===== */
+.theme-spring{background:linear-gradient(180deg,#C8F0C8 0%,#98D898 100%)}
+.theme-desert{background:linear-gradient(180deg,#F4E4C4 0%,#E8C890 100%)}
+.theme-night{background:linear-gradient(180deg,#3D5A6C 0%,#2C3E50 100%)}
+.theme-sunset{background:linear-gradient(180deg,#FF9A7A 0%,#FF7A5A 100%)}
 
-/* ===== MODAL ANIMATIONS ===== */
-@keyframes slideUp{0%{transform:translateY(100%)}100%{transform:translateY(0)}}
-.modal-animate{animation:slideUp 0.3s ease-out}
+@media(min-width:768px){
+  .board-area{max-width:55vmin !important;height:55vmin !important;margin:0 auto}
+}
 </style>
 </head>
 <body>
 
-<!-- ===== HOME ===== -->
+<!-- HOME -->
 <div id="home" class="screen active">
   <div class="sheep-mascot">🐑</div>
   <div class="game-title">咩了个咩</div>
@@ -203,108 +200,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   <button class="btn-start" onclick="Game.showLevelSelect()">开始挑战</button>
   <div class="home-cards">
     <div class="home-card" onclick="Game.showLevelSelect()">
-      <div class="home-card-icon">📋</div>
-      <div class="home-card-label">当前关卡</div>
-      <div class="home-card-value" id="home-level">1</div>
+      <div class="home-card-icon">📋</div><div class="home-card-label">当前关卡</div><div class="home-card-value" id="h-level">1</div>
     </div>
     <div class="home-card">
-      <div class="home-card-icon">🪙</div>
-      <div class="home-card-label">金币</div>
-      <div class="home-card-value" id="home-gold">0</div>
+      <div class="home-card-icon">🪙</div><div class="home-card-label">金币</div><div class="home-card-value" id="h-gold">0</div>
     </div>
     <div class="home-card" onclick="Game.showSkins()">
-      <div class="home-card-icon">🦙</div>
-      <div class="home-card-label">皮肤</div>
-      <div class="home-card-value" id="home-skins">0/36</div>
+      <div class="home-card-icon">🦙</div><div class="home-card-label">皮肤</div><div class="home-card-value" id="h-skins">0/36</div>
     </div>
   </div>
   <div class="stats-row">
-    <div class="stat-item">
-      <div class="stat-val" id="home-daily">0</div>
-      <div class="stat-lbl">今日通关</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-val" id="home-total">0</div>
-      <div class="stat-lbl">历史通关</div>
-    </div>
+    <div class="stat-item"><div class="stat-val" id="h-daily">0</div><div class="stat-lbl">今日通关</div></div>
+    <div class="stat-item"><div class="stat-val" id="h-total">0</div><div class="stat-lbl">历史通关</div></div>
   </div>
   <div style="display:flex;gap:10px;margin-top:4px">
-    <button class="btn-start" style="width:140px;height:46px;font-size:0.95rem;background:#fff;color:var(--primary);border:2px solid var(--primary);box-shadow:none" onclick="Game.showDaily()">每日挑战</button>
+    <button class="btn-start" style="width:140px;height:46px;font-size:0.95rem;background:#fff;color:var(--primary);border:2px solid var(--primary);box-shadow:none" onclick="Game.startDaily()">每日挑战</button>
     <button class="btn-start" style="width:140px;height:46px;font-size:0.95rem;background:#fff;color:var(--text);box-shadow:none" onclick="Game.showSettings()">⚙ 设置</button>
   </div>
 </div>
 
-<!-- ===== LEVEL SELECT ===== -->
+<!-- LEVEL SELECT -->
 <div id="level-select" class="screen">
   <div class="level-header">
     <button class="level-back" onclick="Game.showHome()">←</button>
     <div class="level-title">选择关卡</div>
     <div style="width:36px"></div>
   </div>
-  <div class="level-progress-bar"><div class="level-progress-fill" id="level-progress-fill" style="width:0%"></div></div>
-  <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0">
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(0)">1-60关</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(1)">61-420关</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(2)">421-1980关</button>
-    <button class="btn-start" style="height:34px;font-size:0.7rem;padding:0 10px;background:#FF9A3D;color:#fff;border:none;border-radius:17px;cursor:pointer" onclick="levelJumpTo(3)">1981-100000关</button>
+  <div class="level-progress-bar"><div class="level-progress-fill" id="lp-fill" style="width:0%"></div></div>
+  <div class="level-nav" id="lp-nav"></div>
+  <div class="level-page-row">
+    <button class="level-page-btn" id="lp-prev" onclick="Game.prevPage()">‹</button>
+    <span class="level-page-lbl" id="lp-lbl"></span>
+    <button class="level-page-btn" id="lp-next" onclick="Game.nextPage()">›</button>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:400px;margin:2px 0">
-    <button id="level-prev" onclick="levelPageNav(-1)" style="width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);visibility:hidden">‹</button>
-    <span id="level-page-label" style="font-size:0.8rem;color:#8B7355;font-weight:600"></span>
-    <button id="level-next" onclick="levelPageNav(1)" style="width:36px;height:36px;background:#fff;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)">›</button>
-  </div>
-  <div class="level-grid" id="level-grid"></div>
-  <div style="padding:8px;text-align:center;color:#8B7355;font-size:0.8rem" id="level-hint">已达今日30关上限，明日再来吧～</div>
+  <div class="level-grid" id="lp-grid"></div>
+  <div class="level-hint" id="lp-hint"></div>
 </div>
 
-<!-- ===== GAME ===== -->
+<!-- GAME -->
 <div id="game" class="screen">
   <div class="game-hud">
     <div class="hud-left">
-      <div class="hud-level" id="game-level-label">第 1 关</div>
-      <div class="hud-timer" id="game-timer">⏱ 0:00</div>
+      <div class="hud-level" id="g-level">第 1 关</div>
+      <div class="hud-timer" id="g-timer">⏱ 0:00</div>
     </div>
     <button class="pause-btn" onclick="Game.togglePause()">⏸</button>
   </div>
-  <div class="board-area" id="board-area">
-    <div class="card-stack" id="card-stack"></div>
-  </div>
-  <div class="slot-area">
-    <div class="slot-row" id="slot-row"></div>
-    <div class="toolbar">
-      <div class="tool-btn" id="tool-shuffle" onclick="Game.useTool('shuffle')">
-        <div class="tool-icon">🔄</div>
-        <div class="tool-name">洗牌</div>
-        <div class="tool-count" id="tool-shuffle-count">2次</div>
-      </div>
-      <div class="tool-btn" id="tool-undo" onclick="Game.useTool('undo')">
-        <div class="tool-icon">↩️</div>
-        <div class="tool-name">撤销</div>
-        <div class="tool-count" id="tool-undo-count">3次</div>
-      </div>
-      <div class="tool-btn" id="tool-remove" onclick="Game.useTool('remove')">
-        <div class="tool-icon">🗑️</div>
-        <div class="tool-name">移出</div>
-        <div class="tool-count" id="tool-remove-count">1次</div>
-      </div>
+  <div class="board-area theme-spring" id="board-area"></div>
+  <div class="slot-row" id="slot-row"></div>
+  <div class="toolbar">
+    <div class="tool-btn" id="tb-shuffle" onclick="Game.useTool('shuffle')">
+      <div class="tool-icon">🔄</div><div class="tool-name">洗牌</div><div class="tool-count" id="tb-shuffle-c">2次</div>
+    </div>
+    <div class="tool-btn" id="tb-undo" onclick="Game.useTool('undo')">
+      <div class="tool-icon">↩️</div><div class="tool-name">撤销</div><div class="tool-count" id="tb-undo-c">3次</div>
+    </div>
+    <div class="tool-btn" id="tb-remove" onclick="Game.useTool('remove')">
+      <div class="tool-icon">🗑️</div><div class="tool-name">移出</div><div class="tool-count" id="tb-remove-c">1次</div>
     </div>
   </div>
 </div>
 
-<!-- ===== WIN SCREEN ===== -->
+<!-- WIN -->
 <div id="winscr" class="screen">
   <div class="win-badge">🏆</div>
   <div class="win-title">通关成功！</div>
-  <div class="win-subtitle" id="win-subtitle">太棒了，你成功通关了！</div>
+  <div class="win-subtitle" id="w-sub"></div>
   <div class="win-stats">
-    <div class="win-stat"><div class="win-stat-val" id="win-time">0:00</div><div class="win-stat-lbl">用时</div></div>
-    <div class="win-stat"><div class="win-stat-val" id="win-steps">0</div><div class="win-stat-lbl">操作</div></div>
-    <div class="win-stat"><div class="win-stat-val" id="win-tools">0</div><div class="win-stat-lbl">道具</div></div>
+    <div class="win-stat"><div class="win-stat-val" id="w-time">0:00</div><div class="win-stat-lbl">用时</div></div>
+    <div class="win-stat"><div class="win-stat-val" id="w-steps">0</div><div class="win-stat-lbl">操作</div></div>
+    <div class="win-stat"><div class="win-stat-val" id="w-tools">0</div><div class="win-stat-lbl">道具</div></div>
   </div>
   <div class="win-reward">
-    <span class="reward-icon">🪙</span>
-    <span id="win-gold-reward">+10 金币</span>
-    <span id="win-fragment-reward" style="display:none">| 🧩 +1 碎片</span>
+    <span class="reward-icon">🪙</span><span id="w-gold">+10 金币</span>
+    <span id="w-frag" style="display:none">| 🧩 +1 碎片</span>
   </div>
   <div class="win-btns">
     <button class="btn-primary-share" onclick="Game.shareResult()">📤 炫耀一下</button>
@@ -313,39 +282,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   </div>
 </div>
 
-<!-- ===== LOSE SCREEN ===== -->
+<!-- LOSE -->
 <div id="losescr" class="screen">
   <div class="lose-sheep">😢</div>
   <div class="lose-title">本局失败</div>
-  <div class="lose-reason" id="lose-reason">槽位满了，差一点就过了！</div>
+  <div class="lose-reason" id="l-reason">槽位满了，差一点就过了！</div>
   <div class="lose-btns">
-    <button class="btn-revive btn-revive-ad" id="btn-revive-ad" onclick="Game.reviveByAd()">
-      📺 看广告复活（剩余<span id="ad-revive-count">2</span>次）
-    </button>
-    <button class="btn-revive btn-revive-gold" id="btn-revive-gold" onclick="Game.reviveByGold()">
-      🪙 金币复活 (100)
-    </button>
+    <button class="btn-revive btn-revive-ad" id="l-ad" onclick="Game.reviveAd()">📺 看广告复活（剩余<span id="l-ad-c">2</span>次）</button>
+    <button class="btn-revive btn-revive-gold" id="l-gold" onclick="Game.reviveGold()">🪙 金币复活 (100)</button>
     <button class="btn-restart" onclick="Game.restartLevel()">🔄 重新挑战</button>
     <button class="btn-back" onclick="Game.showHome()">返回首页</button>
   </div>
 </div>
 
-<!-- ===== SKINS ===== -->
+<!-- SKINS -->
 <div id="skins" class="screen">
   <div class="skins-header">
     <button class="skins-back" onclick="Game.showHome()">←</button>
     <div class="skins-title">🦙 羊群皮肤</div>
-    <div class="skins-info">
-      <span>🧩 <span id="skin-fragments">0</span></span>
-    </div>
+    <div class="skins-info"><span>🧩 <span id="sk-frag">0</span></span></div>
   </div>
-  <div class="skin-progress-wrap"><div class="skin-progress" id="skin-progress-bar" style="width:0%"></div></div>
-  <div class="skin-progress-lbl" id="skin-progress-lbl">0 / 36 已解锁</div>
-  <div class="skin-grid" id="skin-grid"></div>
+  <div class="skin-progress-wrap"><div class="skin-progress" id="sk-progress" style="width:0%"></div></div>
+  <div class="skin-progress-lbl" id="sk-lbl">0 / 36 已解锁</div>
+  <div class="skin-grid" id="sk-grid"></div>
   <button class="btn-start" style="background:#fff;color:var(--primary);border:2px solid var(--primary);box-shadow:none;height:46px;font-size:0.95rem;margin-top:4px" onclick="Game.showHome()">返回</button>
 </div>
 
-<!-- ===== PAUSE OVERLAY ===== -->
+<!-- PAUSE -->
 <div id="pause-overlay">
   <div class="pause-box">
     <div class="pause-title">⏸ 游戏暂停</div>
@@ -354,1115 +317,531 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   </div>
 </div>
 
-<!-- ===== SETTINGS ===== -->
+<!-- SETTINGS -->
 <div id="settings-overlay">
   <div class="settings-box">
     <div class="settings-title">⚙ 设置</div>
-    <div class="setting-row">
-      <span class="setting-lbl">🎵 背景音乐</span>
-      <button class="toggle on" id="toggle-bgm" onclick="Game.toggleSetting('bgm')"></button>
-    </div>
-    <div class="setting-row">
-      <span class="setting-lbl">🔊 游戏音效</span>
-      <button class="toggle on" id="toggle-sfx" onclick="Game.toggleSetting('sfx')"></button>
-    </div>
-    <div class="setting-row">
-      <span class="setting-lbl">📳 振动反馈</span>
-      <button class="toggle on" id="toggle-vibrate" onclick="Game.toggleSetting('vibrate')"></button>
-    </div>
+    <div class="setting-row"><span class="setting-lbl">🎵 背景音乐</span><button class="toggle on" id="t-bgm" onclick="Game.toggleSetting('bgm')"></button></div>
+    <div class="setting-row"><span class="setting-lbl">🔊 游戏音效</span><button class="toggle on" id="t-sfx" onclick="Game.toggleSetting('sfx')"></button></div>
+    <div class="setting-row"><span class="setting-lbl">📳 振动反馈</span><button class="toggle on" id="t-vib" onclick="Game.toggleSetting('vibrate')"></button></div>
     <button class="settings-close" onclick="Game.hideSettings()">完成</button>
   </div>
 </div>
 
-<!-- ===== TOAST ===== -->
+<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
-// ===== AUDIO ENGINE =====
+// ============================================================
+//  AUDIO
+// ============================================================
 const Audio = (() => {
   let ctx = null;
-  let bgmOsc = null;
-  let bgmGain = null;
-  const bgmNotes = [523, 659, 784, 659, 784, 1047]; // C E G E G C
-  let bgmNoteIdx = 0;
-  let bgmInterval = null;
-  const settings = { bgm: true, sfx: true, vibrate: true };
-
-  function init() {
+  let bgmI = null;
+  const S = { bgm: true, sfx: true, vibrate: true };
+  function init() { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} }
+  function tone(f, d, v=0.25) {
+    if (!S.sfx || !ctx) return;
     try {
-      ctx = new (window.AudioContext || window.webkitAudioContext)();
-    } catch(e) { console.log('Audio not available'); }
-  }
-
-  function ensureCtx() {
-    if (!ctx) init();
-    if (ctx && ctx.state === 'suspended') ctx.resume();
-  }
-
-  function playTone(freq, dur, type='sine', vol=0.3) {
-    if (!settings.sfx || !ctx) return;
-    try {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
+      const o = ctx.createOscillator(), g = ctx.createGain();
       o.connect(g); g.connect(ctx.destination);
-      o.type = type; o.frequency.value = freq;
-      g.gain.setValueAtTime(vol, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-      o.start(); o.stop(ctx.currentTime + dur);
+      o.frequency.value = f; g.gain.setValueAtTime(v, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + d);
+      o.start(); o.stop(ctx.currentTime + d);
     } catch(e) {}
   }
-
-  function playClick() { playTone(800, 0.08, 'sine', 0.2); }
-  function playPop() { playTone(600, 0.15, 'sine', 0.3); }
-  function playMatch1() { playTone(523, 0.1, 'sine', 0.25); setTimeout(()=>playTone(659, 0.1, 'sine', 0.25), 80); }
-  function playMatch3() { [523,659,784].forEach((f,i)=>setTimeout(()=>playTone(f, 0.2, 'sine', 0.3), i*100)); }
-  function playWin() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playTone(f, 0.3, 'sine', 0.3), i*150)); }
-  function playLose() { [400,350,300].forEach((f,i)=>setTimeout(()=>playTone(f, 0.3, 'sine', 0.25), i*200)); }
-  function playError() { playTone(200, 0.3, 'square', 0.15); }
-  function playSheepBaa() { playTone(440, 0.2, 'sine', 0.2); setTimeout(()=>playTone(380, 0.15, 'sine', 0.15), 150); }
-  function playSheepSigh() { playTone(250, 0.3, 'sine', 0.12); }
-  function playHappyBGM() {
-    if (!ctx || !settings.bgm) return;
-    stopBGM();
-    const notes = [659,784,880,784,880,1047,1047,1175,1047];
+  function click() { tone(800, 0.07, 0.2); }
+  function pop() { tone(600, 0.12, 0.25); }
+  function match3() { [523,659,784].forEach((f,i)=>setTimeout(()=>tone(f,0.18,0.28),i*90)); }
+  function win() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.3,0.3),i*140)); }
+  function lose() { [400,350,300].forEach((f,i)=>setTimeout(()=>tone(f,0.25,0.2),i*180)); }
+  function baa() { tone(440,0.15,0.2); setTimeout(()=>tone(360,0.12,0.15),120); }
+  function startBGM() {
+    if (!S.bgm || !ctx || bgmI) return;
+    const ns = [523,659,784,659,880,1047];
     let idx = 0;
-    bgmInterval = setInterval(() => {
-      if (!settings.bgm || !ctx) { stopBGM(); return; }
-      const freq = notes[idx % notes.length];
-      idx++;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
+    bgmI = setInterval(() => {
+      if (!S.bgm || !ctx) { stopBGM(); return; }
+      const o = ctx.createOscillator(), g = ctx.createGain();
       o.connect(g); g.connect(ctx.destination);
-      o.type = 'triangle'; o.frequency.value = freq;
-      g.gain.setValueAtTime(0.1, ctx.currentTime);
+      o.type = 'sine'; o.frequency.value = ns[idx % ns.length];
+      g.gain.setValueAtTime(0.08, ctx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
       o.start(); o.stop(ctx.currentTime + 0.45);
-    }, 300);
+      idx++;
+    }, 450);
   }
-  function switchToHappyBGM() { playHappyBGM(); }
-
-  function startBGM() {
-    if (!settings.bgm || !ctx || bgmInterval) return;
-    bgmGain = ctx.createGain();
-    bgmGain.gain.value = 0.08;
-    bgmGain.connect(ctx.destination);
-    bgmInterval = setInterval(() => {
-      if (!settings.bgm || !ctx) { stopBGM(); return; }
-      const freq = bgmNotes[bgmNoteIdx % bgmNotes.length];
-      bgmNoteIdx++;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(bgmGain);
-      o.type = 'sine'; o.frequency.value = freq;
-      g.gain.setValueAtTime(0.08, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-      o.start(); o.stop(ctx.currentTime + 0.5);
-    }, 500);
-  }
-
-  function stopBGM() {
-    if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
-  }
-
-  function vibrate(ms) {
-    if (settings.vibrate && navigator.vibrate) navigator.vibrate(ms);
-  }
-
-  function toggle(key) {
-    settings[key] = !settings[key];
-    if (key === 'bgm') { if (settings.bgm) startBGM(); else stopBGM(); }
-    return settings[key];
-  }
-
-  function isEnabled(key) { return settings[key]; }
-
-  return { init, playClick, playPop, playMatch1, playMatch3, playWin, playLose, playError, startBGM, stopBGM, vibrate, toggle, isEnabled, settings };
+  function stopBGM() { if (bgmI) { clearInterval(bgmI); bgmI = null; } }
+  function vib(ms) { if (S.vibrate && navigator.vibrate) navigator.vibrate(ms); }
+  function toggle(k) { S[k] = !S[k]; if (k==='bgm') { if (S.bgm) startBGM(); else stopBGM(); } return S[k]; }
+  return { init, click, pop, match3, win, lose, baa, startBGM, stopBGM, vib, toggle, S };
 })();
 
-// ===== SKINS DATA =====
-const ALL_SKINS = [
-  {id:0,emoji:'🐑',name:'普通羊',cost:0,rarity:0},
-  {id:1,emoji:'🐏',name:'卷毛羊',cost:5,rarity:0},
-  {id:2,emoji:'🦙',name:'羊驼',cost:5,rarity:0},
-  {id:3,emoji:'🐐',name:'山羊',cost:5,rarity:0},
-  {id:4,emoji:'🐑‍🦙',name:'小羊驼',cost:8,rarity:0},
-  {id:5,emoji:'🦒',name:'长颈鹿',cost:8,rarity:0},
-  {id:6,emoji:'🐘',name:'大象',cost:8,rarity:0},
-  {id:7,emoji:'🐼',name:'熊猫',cost:8,rarity:0},
-  {id:8,emoji:'🐨',name:'考拉',cost:8,rarity:0},
-  {id:9,emoji:'🐻',name:'小熊',cost:8,rarity:0},
-  {id:10,emoji:'🐰',name:'小兔',cost:10,rarity:0},
-  {id:11,emoji:'🦊',name:'狐狸',cost:10,rarity:0},
-  {id:12,emoji:'🐻‍❄️',name:'北极熊',cost:10,rarity:0},
-  {id:13,emoji:'🐨‍🦡',name:'袋鼠',cost:10,rarity:0},
-  {id:14,emoji:'🦝',name:'浣熊',cost:10,rarity:0},
-  {id:15,emoji:'🐷',name:'小猪',cost:12,rarity:0},
-  {id:16,emoji:'🐮',name:'小牛',cost:12,rarity:0},
-  {id:17,emoji:'🦄',name:'独角兽',cost:12,rarity:0},
-  {id:18,emoji:'🐸',name:'青蛙',cost:12,rarity:0},
-  {id:19,emoji:'🐔',name:'小鸡',cost:12,rarity:0},
-  {id:20,emoji:'🦋',name:'蝴蝶',cost:15,rarity:1},
-  {id:21,emoji:'🌸',name:'樱花羊',cost:15,rarity:1},
-  {id:22,emoji:'🍓',name:'草莓羊',cost:15,rarity:1},
-  {id:23,emoji:'🌈',name:'彩虹羊',cost:15,rarity:1},
-  {id:24,emoji:'⭐',name:'星星羊',cost:15,rarity:1},
-  {id:25,emoji:'🔥',name:'火焰羊',cost:15,rarity:1},
-  {id:26,emoji:'❄️',name:'冰雪羊',cost:15,rarity:1},
-  {id:27,emoji:'🌙',name:'月亮羊',cost:18,rarity:1},
-  {id:28,emoji:'🎃',name:'南瓜羊',cost:18,rarity:1},
-  {id:29,emoji:'🤖',name:'机器人',cost:18,rarity:1},
-  {id:30,emoji:'👑',name:'皇冠羊',cost:20,rarity:2},
-  {id:31,emoji:'💎',name:'钻石羊',cost:20,rarity:2},
-  {id:32,emoji:'🚀',name:'火箭羊',cost:20,rarity:2},
-  {id:33,emoji:'🎮',name:'游戏羊',cost:25,rarity:2},
+// ============================================================
+//  DATA
+// ============================================================
+const EMOJIS = ['🐑','🐏','🦙','🐐','🦒','🐘','🐼','🐨'];
+const SKINS = [
+  {id:0,e:'🐑',n:'普通羊',c:0},{id:1,e:'🐏',n:'卷毛羊',c:5},{id:2,e:'🦙',n:'羊驼',c:5},{id:3,e:'🐐',n:'山羊',c:5},
+  {id:4,e:'🐑‍🦙',n:'小羊驼',c:8},{id:5,e:'🦒',n:'长颈鹿',c:8},{id:6,e:'🐘',n:'大象',c:8},{id:7,e:'🐼',n:'熊猫',c:8},
+  {id:8,e:'🐨',n:'考拉',c:8},{id:9,e:'🐻',n:'小熊',c:8},{id:10,e:'🐰',n:'小兔',c:10},{id:11,e:'🦊',n:'狐狸',c:10},
+  {id:12,e:'🐻‍❄️',n:'北极熊',c:10},{id:13,e:'🐨‍🦡',n:'袋鼠',c:10},{id:14,e:'🦝',n:'浣熊',c:10},{id:15,e:'🐷',n:'小猪',c:12},
+  {id:16,e:'🐮',n:'小牛',c:12},{id:17,e:'🦄',n:'独角兽',c:12},{id:18,e:'🐸',n:'青蛙',c:12},{id:19,e:'🐔',n:'小鸡',c:12},
+  {id:20,e:'🦋',n:'蝴蝶',c:15},{id:21,e:'🌸',n:'樱花羊',c:15},{id:22,e:'🍓',n:'草莓羊',c:15},{id:23,e:'🌈',n:'彩虹羊',c:15},
+  {id:24,e:'⭐',n:'星星羊',c:15},{id:25,e:'🔥',n:'火焰羊',c:15},{id:26,e:'❄️',n:'冰雪羊',c:15},{id:27,e:'🌙',n:'月亮羊',c:18},
+  {id:28,e:'🎃',n:'南瓜羊',c:18},{id:29,e:'🤖',n:'机器人',c:18},{id:30,e:'👑',n:'皇冠羊',c:20},{id:31,e:'💎',n:'钻石羊',c:20},
+  {id:32,e:'🚀',n:'火箭羊',c:20},{id:33,e:'🎮',n:'游戏羊',c:25},
 ];
+const THEMES = ['theme-spring','theme-desert','theme-night','theme-sunset'];
 
-const CARD_EMOJIS = ['🐑','🐏','🦙','🐐','🦒','🐘','🐼','🐨'];
-
-// ===== GAME STATE =====
+// ============================================================
+//  GAME
+// ============================================================
 const Game = (() => {
   // State
-  let state = {
-    level: 1,
-    dailyLevel: 0,
-    gold: 0,
-    fragments: 0,
-    ownedSkins: [0],
-    equippedSkin: 0,
-    totalWin: 0,
-    todayWin: 0,
-    todayLevels: [], // levels played today
-    dailyDate: '',   // date string for daily reset
-    adReviveLeft: 2,
-    goldReviveLeft: 99,
-    levelBestTimes: {},
-    settings: { bgm: true, sfx: true, vibrate: true }
-  };
+  let S = { level:1, gold:0, frags:0, owned:[0], equip:0, totalWin:0, todayWin:0, todayLvls:[], adLeft:2, bt:{} };
+  let pile = [], slots = [null,null,null,null,null,null,null];
+  let tools = {shuffle:2, undo:3, remove:1};
+  let steps = 0, toolUsed = 0, sec = 0, tInt = null, active = false, paused = false, daily = false;
+  let page = 0, maxPage = Math.floor((100000-1)/60);
 
-  // Runtime
-  let cards = [];       // {id, type, x, y, z, removed, inSlot, slotIdx}
-  let slots = [null,null,null,null,null,null,null];
-  let tools = { shuffle: 2, undo: 3, remove: 1 };
-  let stepCount = 0;
-  let toolUsed = 0;
-  let timerInterval = null;
-  let elapsedSec = 0;
-  let gameActive = false;
-  let paused = false;
-  let cardIdCounter = 0;
-  let isDaily = false;
-  let maxDailyLevel = 0;
-  let maxDailyLevelDate = '';
-
-  // DOM refs
-  let boardEl, stackEl, slotRowEl;
-
-  // ===== PERSISTENCE =====
+  // Persistence
   function save() {
     try {
-      const s = {...state, todayLevels: undefined, dailyDate: undefined, levelBestTimes: undefined};
-      localStorage.setItem('miewmiew_state', JSON.stringify(s));
-      // Save best times separately
-      localStorage.setItem('miewmiew_besttimes', JSON.stringify(state.levelBestTimes));
-      // Save daily data separately
-      localStorage.setItem('miewmiew_daily', JSON.stringify({
-        todayLevels: state.todayLevels,
-        dailyDate: state.dailyDate,
-        todayWin: state.todayWin,
-        adReviveLeft: state.adReviveLeft
-      }));
+      localStorage.setItem('mg_state', JSON.stringify({level:S.level,gold:S.gold,frags:S.frags,owned:S.owned,equip:S.equip,totalWin:S.totalWin,adLeft:S.adLeft,bt:S.bt}));
+      localStorage.setItem('mg_daily', JSON.stringify({todayLvls:S.todayLvls,todayWin:S.todayWin,dailyDate:todayStr()}));
     } catch(e) {}
   }
-
   function load() {
     try {
-      const s = JSON.parse(localStorage.getItem('miewmiew_state') || '{}');
-      if (s.level) {
-        state = {...state, ...s};
-        state.todayLevels = [];
-        state.dailyDate = '';
-      }
-      const bt = JSON.parse(localStorage.getItem('miewmiew_besttimes') || '{}');
-      if (bt) state.levelBestTimes = bt;
-      const daily = JSON.parse(localStorage.getItem('miewmiew_daily') || '{}');
-      if (daily.dailyDate === todayStr()) {
-        state.todayLevels = daily.todayLevels || [];
-        state.todayWin = daily.todayWin || 0;
-        state.adReviveLeft = daily.adReviveLeft ?? 2;
-      } else {
-        state.todayLevels = [];
-        state.todayWin = 0;
-        state.adReviveLeft = 2;
-      }
+      const s = JSON.parse(localStorage.getItem('mg_state')||'{}');
+      S = {...S,...s};
+      const d = JSON.parse(localStorage.getItem('mg_daily')||'{}');
+      if (d.dailyDate === todayStr()) { S.todayLvls = d.todayLvls||[]; S.todayWin = d.todayWin||0; } else { S.todayLvls=[]; S.todayWin=0; }
     } catch(e) {}
   }
+  function todayStr() { const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 
-  function todayStr() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-  }
+  // Screen
+  function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+  function showHome() { Audio.stopBGM(); show('home'); paused=false; document.getElementById('pause-overlay').classList.remove('active'); refreshHome(); }
+  function refreshHome() { document.getElementById('h-level').textContent=S.level; document.getElementById('h-gold').textContent=S.gold; document.getElementById('h-skins').textContent=S.owned.length+'/36'; document.getElementById('h-daily').textContent=S.todayWin; document.getElementById('h-total').textContent=S.totalWin; }
 
-  // ===== SCREEN MANAGER =====
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
-  function showHome() {
-    stopBGM();
-    showScreen('home');
-    updateHomeUI();
-    paused = false;
-    document.getElementById('pause-overlay').classList.remove('active');
-  }
-
-  function updateHomeUI() {
-    document.getElementById('home-level').textContent = state.level;
-    document.getElementById('home-gold').textContent = state.gold;
-    document.getElementById('home-skins').textContent = `${state.ownedSkins.length}/36`;
-    document.getElementById('home-daily').textContent = state.todayWin;
-    document.getElementById('home-total').textContent = state.totalWin;
-  }
-
-  // ===== LEVEL GENERATION =====
-  // Uses reverse-generation: build solvable levels by dealing from top layer down
-  function generateLevel(lvl, isDailyMode = false) {
-    const boardW = 380;
-    const boardH = 420;
-    const cardW = 52;
-    const cardH = 68;
-
-    // Difficulty parameters for 6000 levels
-    // Level 1: Tutorial (15 cards, 4 types, 3 layers)
-    // Levels 2-100: Easy (grows quickly, 5-7 types)
-    // Levels 101-500: Medium (6-8 types, 8-10 layers)
-    // Levels 501-2000: Hard (8 types, 10-13 layers, 80-120 cards)
-    // Levels 2001-6000: Extreme (8 types, 13-15 layers, 120-180 cards)
-    let totalCards, cardTypes, layerCount;
-    if (lvl === 1) {
-      totalCards = 15; cardTypes = 4; layerCount = 3;
-    } else if (lvl <= 100) {
-      totalCards = Math.floor(20 + lvl * 1.8);
-      cardTypes = 5 + Math.floor(lvl / 30);
-      layerCount = 3 + Math.floor(lvl / 15);
-    } else if (lvl <= 500) {
-      totalCards = Math.floor(80 + (lvl - 100) * 1.2);
-      cardTypes = 8;
-      layerCount = 9 + Math.floor((lvl - 100) / 80);
-    } else if (lvl <= 10000) {
-      totalCards = Math.floor(120 + (lvl - 500) * 0.5);
-      cardTypes = 8;
-      layerCount = 14;
-    } else {
-      totalCards = Math.min(200, Math.floor(130 + (lvl - 10000) * 0.005));
-      cardTypes = 8;
-      layerCount = 15;
-    }
-    totalCards = Math.min(180, Math.max(15, totalCards));
-    layerCount = Math.min(15, Math.max(3, layerCount));
-    cardTypes = Math.min(8, Math.max(4, cardTypes));
-
-    // Step 1: Generate type counts (ensures divisible by 3)
-    let counts = new Array(cardTypes).fill(0);
-    let rem = totalCards;
-    for (let i = 0; i < cardTypes - 1; i++) {
-      counts[i] = Math.floor(rem / (cardTypes - i) / 3) * 3;
-      rem -= counts[i];
-    }
-    counts[cardTypes - 1] = Math.floor(rem / 3) * 3;
-
-    // Step 2: Build the draw order (reverse of gameplay)
-    // Each group of 3 same-type cards will be "drawn" together
-    // We deal from TOP layer down to BOTTOM layer
-    let typeQueue = [];
-    for (let t = 0; t < cardTypes; t++) {
-      for (let c = 0; c < counts[t] / 3; c++) {
-        typeQueue.push(t, t, t); // 3 of each type
-      }
-    }
-    // Shuffle the draw order (randomizes which types appear when)
-    for (let i = typeQueue.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [typeQueue[i], typeQueue[j]] = [typeQueue[j], typeQueue[i]];
-    }
-
-    // Step 3: Build the placement grid
-    // Pre-calculate grid positions (sparse grid with overlap potential)
-    const cols = 7;
-    const cellW = (boardW - 8) / cols;
-    const cellH = cardH + 8;
-    const rowsPerLayer = Math.ceil(totalCards / cols / layerCount) + 2;
-
-    // Pre-generate all positions: [layer][row][col]
-    let allPositions = [];
-    for (let layer = 0; layer < layerCount; layer++) {
-      for (let row = 0; row < rowsPerLayer; row++) {
-        for (let col = 0; col < cols + 2; col++) { // +2 for overflow
-          // Add jitter for natural look
-          const xJitter = (Math.random() - 0.5) * 16;
-          const yJitter = (Math.random() - 0.5) * 10;
-          const x = col * cellW - cellW * 0.5 + xJitter;
-          const y = row * cellH * 0.7 + layer * cardH * 0.5 + yJitter;
-          allPositions.push({ x, y, z: layer * 100 + row * cols + col });
+  // Level generation
+  function genLevel(lvl) {
+    let n, types, layers;
+    if (lvl === 1) { n=15; types=4; layers=3; }
+    else if (lvl <= 100) { n=Math.floor(20+lvl*1.8); types=Math.min(8,5+Math.floor(lvl/30)); layers=Math.min(15,3+Math.floor(lvl/15)); }
+    else if (lvl <= 500) { n=Math.floor(80+(lvl-100)*1.2); types=8; layers=Math.min(15,9+Math.floor((lvl-100)/80)); }
+    else { n=Math.min(180,Math.floor(120+(lvl-500)*0.5)); types=8; layers=15; }
+    n = Math.max(15, Math.min(180, n)); layers = Math.max(3,Math.min(15,layers)); types = Math.max(4,Math.min(8,types));
+    let counts = new Array(types).fill(0), rem=n;
+    for (let i=0;i<types-1;i++) { counts[i]=Math.floor(rem/(types-i)/3)*3; rem-=counts[i]; }
+    counts[types-1]=Math.floor(rem/3)*3;
+    let list=[]; for (let t=0;t<types;t++) for (let c=0;c<counts[t]/3;c++) list.push(t,t,t);
+    for (let i=list.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+    const W=380, cols=7, cW=46, cH=60, pad=6;
+    let positions=[];
+    for (let layer=0;layer<layers;layer++) {
+      for (let row=0;row<Math.ceil(n/layers/cols)+2;row++) {
+        for (let col=0;col<cols;col++) {
+          const x = pad + col*(W-12)/cols + (Math.random()-0.5)*10;
+          const y = pad + row*cH*0.65 + layer*cH*0.52 + (Math.random()-0.5)*8;
+          positions.push({x:Math.max(-8,Math.min(W-cW+8,x)), y:Math.max(-8,y), z:layer*100+row*cols+col});
         }
       }
     }
-
-    // Shuffle positions (so cards go to random spots)
-    for (let i = allPositions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allPositions[i], allPositions[j]] = [allPositions[j], allPositions[i]];
+    positions.sort(()=>Math.random()-0.5);
+    positions = positions.slice(0,n);
+    let cards = [];
+    for (let i=0;i<n;i++) {
+      const p = positions[i];
+      cards.push({id:i, type:list[i%list.length], x:p.x, y:p.y, z:p.z, gone:false});
     }
-
-    // Step 4: Assign card types to positions
-    // The key: deal from the TOP (highest layer) down so lower cards get placed first
-    // Sort positions by z descending (top layer first in dealing)
-    // Take positions from ALL layers, not just layer 0
-    const shuffled = allPositions.slice();
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    let dealOrder = shuffled.slice(0, totalCards);
-    // Sort so high z positions get dealt first (top layer cards on top)
-    dealOrder.sort((a, b) => b.z - a.z);
-
-    let newCards = [];
-    let id = 0;
-    for (let i = 0; i < dealOrder.length && i < typeQueue.length; i++) {
-      const pos = dealOrder[i];
-      newCards.push({
-        id: id++,
-        type: typeQueue[i % typeQueue.length],
-        x: Math.max(-cardW * 0.3, Math.min(boardW - cardW * 0.7, pos.x)),
-        y: Math.max(-cardH * 0.2, Math.min(boardH - cardH * 0.8, pos.y)),
-        z: pos.z,
-        removed: false,
-        inSlot: false,
-        slotIdx: -1
-      });
-    }
-
-    // Sort by z for rendering (lowest layer first)
-    newCards.sort((a, b) => a.z - b.z);
-    return newCards;
+    cards.sort((a,b)=>a.z-b.z);
+    return cards;
   }
 
-  // ===== RENDER BOARD =====
-  function renderBoard() {
-    if (!boardEl) boardEl = document.getElementById('board-area');
-    if (!stackEl) stackEl = document.getElementById('card-stack');
-    stackEl.innerHTML = '';
-
-    const boardW = boardEl.clientWidth || 380;
-    const boardH = boardEl.clientHeight || 360;
-    const cardW = 48;
-    const cardH = 62;
-    const scaleX = boardW / 380;
-    const scaleY = boardH / 420;
-    const scale = Math.min(scaleX, scaleY, 1.0);
-
-    // Render ALL non-removed, non-slot cards (visible layers)
-    // Pre-calculate which cards are clickable (accounts for scale)
-    const clickableMap = new Map();
-    cards.forEach(card => {
-      if (card.removed || card.inSlot) return;
-      clickableMap.set(card.id, isCardClickableWithScale(card, scale));
-    });
-
-    cards.forEach(card => {
-      if (card.removed || card.inSlot) return;
-
-      const clickable = clickableMap.get(card.id);
-
-      const el = document.createElement('div');
-      el.className = 'card' + (clickable ? '' : ' disabled');
-      el.dataset.id = card.id;
-      el.dataset.type = card.type;
-      el.textContent = CARD_EMOJIS[card.type];
-      el.style.left = (card.x * scale + (boardW - 380 * scale) / 2) + 'px';
-      el.style.top = (card.y * scale) + 'px';
-      el.style.zIndex = card.z;
-      el.style.transform = `scale(${scale})`;
-
-      if (clickable) {
-        const cardId = card.id;
-        el.addEventListener('click', () => { onCardClickById(cardId); });
-        el.addEventListener('touchstart', (e) => {
-          e.preventDefault();
-          onCardClickById(cardId);
-        }, { passive: false });
-      }
-
-      stackEl.appendChild(el);
-    });
-  }
-
-  function renderSlots() {
-    if (!slotRowEl) slotRowEl = document.getElementById('slot-row');
-    slotRowEl.innerHTML = '';
-    for (let i = 0; i < 7; i++) {
-      const slot = document.createElement('div');
-      slot.className = 'slot' + (slots[i] !== null ? ' filled' : '');
-      slot.id = 'slot-' + i;
-      if (slots[i] !== null) {
-        slot.textContent = CARD_EMOJIS[slots[i].type];
-        slot.dataset.type = slots[i].type;
-        slot.dataset.id = slots[i].id;
-      }
-      slotRowEl.appendChild(slot);
-    }
-  }
-
-  function isCardClickableWithScale(card, scale) {
-    if (card.removed || card.inSlot) return false;
-    // Account for CSS scale in overlap detection
-    const CW = 46 * scale, CH = 60 * scale;
-    const overlapMargin = 3;
-    for (let i = 0; i < cards.length; i++) {
-      const other = cards[i];
-      if (other.id === card.id) continue;
-      if (other.removed) continue;
-      if (other.inSlot) continue;
-      if (other.z <= card.z) continue;
-      if (card.x + CW - overlapMargin > other.x &&
-          card.x + overlapMargin < other.x + CW &&
-          card.y + CH - overlapMargin > other.y &&
-          card.y + overlapMargin < other.y + CH) {
-        return false;
-      }
+  // Can click: no other card with higher z overlaps this card
+  function canClick(card) {
+    if (card.gone) return false;
+    for (let i=0;i<pile.length;i++) {
+      const o = pile[i];
+      if (o.id===card.id || o.gone) continue;
+      if (o.z <= card.z) continue;
+      const dx = Math.abs(card.x - o.x), dy = Math.abs(card.y - o.y);
+      if (dx < 40 && dy < 54) return false;
     }
     return true;
   }
-  function isCardClickable(card) {
-    return isCardClickableWithScale(card, 1.0);
+
+  // Render
+  function render() {
+    const board = document.getElementById('board-area');
+    const themeIdx = Math.floor(S.level/5) % 4;
+    THEMES.forEach(t => board.classList.remove(t));
+    board.classList.add(THEMES[themeIdx]);
+    board.innerHTML = '';
+    pile.forEach(card => {
+      if (card.gone) return;
+      const clickable = canClick(card);
+      const el = document.createElement('div');
+      el.className = 'pc' + (clickable ? '' : ' blocked');
+      el.dataset.id = card.id;
+      el.dataset.t = card.type;
+      el.textContent = EMOJIS[card.type];
+      el.style.left = card.x + 'px';
+      el.style.top = card.y + 'px';
+      el.style.zIndex = card.z;
+      if (clickable) el.setAttribute('onclick', 'Game.pick('+card.id+')');
+      board.appendChild(el);
+    });
+    renderSlots();
+    updateTools();
   }
 
-  // ===== CARD CLICK =====
-  function onCardClickById(id) {
-    if (!gameActive || paused) return;
-    const card = cards.find(c => c.id === id);
-    // Skip isCardClickable check here - DOM already marks disabled cards
-    // Re-checking with wrong scale causes false negatives
-    if (!card || card.removed || card.inSlot) return;
+  function renderSlots() {
+    const row = document.getElementById('slot-row');
+    row.innerHTML = '';
+    slots.forEach((card, i) => {
+      const el = document.createElement('div');
+      el.className = 'sc' + (card ? ' filled' : '');
+      if (card) { el.dataset.t = card.type; el.textContent = EMOJIS[card.type]; }
+      row.appendChild(el);
+    });
+  }
 
-    // Find empty slot
-    const emptyIdx = slots.findIndex(s => s === null);
-    if (emptyIdx === -1) {
-      // Slots full - check for match
-      checkMatch();
-      return;
-    }
+  function updateTools() {
+    document.getElementById('tb-shuffle-c').textContent = tools.shuffle+'次';
+    document.getElementById('tb-undo-c').textContent = tools.undo+'次';
+    document.getElementById('tb-remove-c').textContent = tools.remove+'次';
+    ['shuffle','undo','remove'].forEach(t => {
+      const el = document.getElementById('tb-'+t);
+      el.classList.toggle('used', tools[t]<=0);
+      el.classList.toggle('disabled', tools[t]<=0);
+    });
+  }
 
-    Audio.playClick();
-    playSheepBaa();
-    showSheepBubble('咩~');
-    card.inSlot = true;
-    card.slotIdx = emptyIdx;
-    slots[emptyIdx] = card;
-    stepCount++;
-    renderBoard();
-    renderSlots();
+  // Pick card
+  function pick(id) {
+    if (!active || paused) return;
+    const card = pile.find(c => c.id === id);
+    if (!card || card.gone) return;
+    const empty = slots.findIndex(s => s === null);
+    if (empty < 0) { checkMatch(); return; }
+    Audio.click();
+    Audio.baa();
+    card.gone = true;
+    slots[empty] = card;
+    steps++;
+    render();
     checkMatch();
   }
 
-  // ===== MATCH CHECK =====
+  // Match check
   function checkMatch() {
-    // Group by type
-    const typeCounts = {};
-    slots.forEach((s, i) => {
-      if (s === null) return;
-      if (!typeCounts[s.type]) typeCounts[s.type] = [];
-      typeCounts[s.type].push(i);
-    });
-
+    const cnt = {};
+    slots.forEach((c,i) => { if (c) { cnt[c.type] = (cnt[c.type]||[]); cnt[c.type].push(i); } });
     let matched = false;
-    for (const type in typeCounts) {
-      if (typeCounts[type].length >= 3) {
-        const toRemove = typeCounts[type].slice(0, 3);
-        // Animate and remove
+    for (const t in cnt) {
+      if (cnt[t].length >= 3) {
         matched = true;
-        Audio.playMatch3();
+        Audio.match3();
+        const rem = cnt[t].slice(0,3);
         setTimeout(() => {
-          toRemove.forEach(idx => {
-            const card = slots[idx];
-            if (card) {
-              card.removed = true;
-              slots[idx] = null;
-            }
-          });
+          rem.forEach(i => { if (slots[i]) { slots[i].gone=true; slots[i]=null; } });
           renderSlots();
-          checkGameOver();
-        }, 200);
+          setTimeout(checkOver, 100);
+        }, 180);
         return;
       }
     }
-
     if (!matched) {
-      // Check if slots full
-      if (slots.every(s => s !== null)) {
-        // Check if any match possible by swapping - if not, game over
-        setTimeout(checkGameOver, 300);
-      }
+      if (slots.every(s=>s!==null)) setTimeout(checkOver, 200);
     }
   }
 
-  function checkGameOver() {
-    // Win: all cards removed (not in slot)
-    const remainingPile = cards.filter(c => !c.removed && !c.inSlot);
-    if (remainingPile.length === 0) {
-      gameWin();
-      return;
-    }
-
-    // Check if any moves possible
-    if (slots.every(s => s !== null)) {
-      // Slots full - check if any match in slots
-      const slotTypes = slots.map(s => s ? s.type : -1);
-      const typeCount = {};
-      slotTypes.forEach(t => { if (t >= 0) typeCount[t] = (typeCount[t] || 0) + 1; });
-      const hasMatch = Object.values(typeCount).some(c => c >= 3);
-      const hasEmptySlot = slots.some(s => s === null);
-
-      if (!hasMatch && !hasEmptySlot) {
-        gameLose();
-      }
-    }
+  function checkOver() {
+    const left = pile.filter(c => !c.gone);
+    if (left.length === 0) { win(); return; }
+    const full = slots.every(s=>s!==null);
+    if (!full) return;
+    const cnt = {}; slots.forEach(c=>{ if(c) cnt[c.type]=(cnt[c.type]||0)+1; });
+    if (Object.values(cnt).some(v=>v>=3)) return;
+    lose();
   }
 
-  // ===== GAME WIN =====
-  function gameWin() {
-    gameActive = false;
-    clearInterval(timerInterval);
-    Audio.playWin();
-    Audio.vibrate([100, 50, 100, 50, 100]);
-    Audio.switchToHappyBGM();
-
-    const reward = state.level * 10;
-    const fragmentReward = (isDaily || state.todayLevels.length === 0) ? 1 : 0;
-    state.gold += reward;
-    state.totalWin++;
-    state.todayWin++;
-    state.todayLevels.push(state.level);
-    if (!isDaily && state.level >= state.maxDailyLevel) {
-      state.maxDailyLevel = state.level;
-    }
-    if (fragmentReward > 0) state.fragments += fragmentReward;
-
-    if (!isDaily && state.level > 100000) {
-      // Already completed all levels, don't advance
-    } else if (!isDaily) {
-      state.level++;
-    }
-    state.adReviveLeft = 2;
-
+  function win() {
+    active=false; clearInterval(tInt); Audio.win(); Audio.vib([100,50,100,50,100]);
+    const reward = S.level*10, frag = (daily || S.todayLvls.length===0) ? 1 : 0;
+    S.gold += reward; S.totalWin++; S.todayWin++; S.todayLvls.push(S.level);
+    if (frag) S.frags += frag;
+    if (!daily && S.level <= 100000) S.level++;
+    S.adLeft = 2;
     save();
-
-    // Update win screen
-    document.getElementById('win-time').textContent = formatTime(elapsedSec);
-    document.getElementById('win-steps').textContent = stepCount;
-    document.getElementById('win-tools').textContent = toolUsed;
-    document.getElementById('win-gold-reward').textContent = `+${reward} 金币`;
-    const fragEl = document.getElementById('win-fragment-reward');
-    if (fragmentReward > 0) {
-      fragEl.style.display = 'inline';
-      fragEl.textContent = '| 🧩 +1 碎片';
-    } else {
-      fragEl.style.display = 'none';
-    }
-
-    const subtitles = ['太棒了，你成功通关了！', '手气不错，继续加油！', '羊羊都被你消灭了！', '差一点就放弃了，结果通关了！', '你是最棒的！'];
-    document.getElementById('win-subtitle').textContent = subtitles[Math.floor(Math.random() * subtitles.length)];
-
-    spawnConfetti();
-    spawnDancingSheep();
-    setTimeout(() => showScreen('winscr'), 600);
+    document.getElementById('w-time').textContent = fmt(sec);
+    document.getElementById('w-steps').textContent = steps;
+    document.getElementById('w-tools').textContent = toolUsed;
+    document.getElementById('w-gold').textContent = '+'+reward+' 金币';
+    const fe = document.getElementById('w-frag');
+    if (frag) { fe.style.display='inline'; fe.textContent='| 🧩 +1 碎片'; } else fe.style.display='none';
+    const subs = ['太棒了，你成功通关了！','手气不错，继续加油！','羊羊都被你消灭了！','差一点就放弃了，结果通关了！'];
+    document.getElementById('w-sub').textContent = subs[Math.floor(Math.random()*subs.length)];
+    confetti(); dancingSheep();
+    setTimeout(()=>show('winscr'), 500);
   }
 
-  // ===== GAME LOSE =====
-  function gameLose() {
-    gameActive = false;
-    clearInterval(timerInterval);
-    Audio.playLose();
-    Audio.vibrate(300);
-
-    const reasons = ['槽位满了，差一点就过了！', '最后一步运气差了点！', '这关确实有点难，再试一次！'];
-    document.getElementById('lose-reason').textContent = reasons[Math.floor(Math.random() * reasons.length)];
-    document.getElementById('ad-revive-count').textContent = state.adReviveLeft;
-
-    const goldBtn = document.getElementById('btn-revive-gold');
-    if (state.gold < 100) {
-      goldBtn.style.opacity = '0.5';
-      goldBtn.style.pointerEvents = 'none';
-    } else {
-      goldBtn.style.opacity = '1';
-      goldBtn.style.pointerEvents = '';
-    }
-
-    if (state.adReviveLeft <= 0) {
-      document.getElementById('btn-revive-ad').style.opacity = '0.5';
-      document.getElementById('btn-revive-ad').style.pointerEvents = 'none';
-    } else {
-      document.getElementById('btn-revive-ad').style.opacity = '1';
-      document.getElementById('btn-revive-ad').style.pointerEvents = '';
-    }
-
-    showScreen('losescr');
+  function lose() {
+    active=false; clearInterval(tInt); Audio.lose(); Audio.vib(300);
+    const reasons = ['槽位满了，差一点就过了！','最后一步运气差了点！','这关确实有点难，再试一次！'];
+    document.getElementById('l-reason').textContent = reasons[Math.floor(Math.random()*reasons.length)];
+    document.getElementById('l-ad-c').textContent = S.adLeft;
+    const gb = document.getElementById('l-gold');
+    if (S.gold < 100) { gb.style.opacity='0.5'; gb.style.pointerEvents='none'; }
+    else { gb.style.opacity='1'; gb.style.pointerEvents=''; }
+    if (S.adLeft <= 0) { document.getElementById('l-ad').style.opacity='0.5'; document.getElementById('l-ad').style.pointerEvents='none'; }
+    show('losescr');
   }
 
-  // ===== REVIVE =====
-  function reviveByAd() {
-    if (state.adReviveLeft <= 0) { toast('今日广告复活次数已用完', 'e'); return; }
-    state.adReviveLeft--;
-    // Simulate ad - in real game would show video
-    toast('视频播放中...（模拟）', 's');
-    setTimeout(() => doRevive(), 1500);
+  // Start
+  function startLevel(lvl, isDaily=false) {
+    if (!isDaily && lvl > S.level+1) { toast('请从当前关卡开始','e'); return; }
+    daily = isDaily;
+    S.level = lvl;
+    pile = genLevel(lvl);
+    slots = [null,null,null,null,null,null,null];
+    tools = {shuffle:2, undo:3, remove:1};
+    steps=0; toolUsed=0; sec=0; active=true; paused=false;
+    clearInterval(tInt);
+    document.getElementById('g-level').textContent = daily ? '每日挑战' : '第 '+lvl+' 关';
+    document.getElementById('g-timer').textContent = '⏱ 0:00';
+    tInt = setInterval(() => {
+      if (paused) return;
+      sec++;
+      const m=Math.floor(sec/60),s=sec%60;
+      document.getElementById('g-timer').textContent = '⏱ '+m+':'+String(s).padStart(2,'0');
+    }, 1000);
+    render();
+    Audio.init();
+    Audio.startBGM();
+    show('game');
   }
 
-  function reviveByGold() {
-    if (state.gold < 100) { toast('金币不足，需要100金币', 'e'); return; }
-    state.gold -= 100;
-    doRevive();
-  }
-
-  function doRevive() {
-    state.goldReviveLeft--;
-    // Remove 3 random from slots
-    let removed = 0;
-    for (let i = slots.length - 1; i >= 0 && removed < 3; i--) {
-      if (slots[i] !== null) {
-        slots[i].removed = true;
-        slots[i] = null;
-        removed++;
-      }
-    }
-    save();
-    toast('复活成功！继续挑战', 's');
-    renderSlots();
-    renderBoard();
-    gameActive = true;
-    startTimer();
-    showScreen('game');
-  }
-
-  // ===== TOOLS =====
+  // Tools
   function useTool(type) {
-    if (!gameActive || paused) return;
-    if (tools[type] <= 0) { toast('当前道具次数已用完', 'e'); Audio.playError(); return; }
-    tools[type]--;
-    toolUsed++;
-    updateToolUI();
-
+    if (!active || paused) return;
+    if (tools[type] <= 0) { toast('次数已用完','e'); return; }
+    tools[type]--; toolUsed++;
+    updateTools();
     if (type === 'shuffle') {
-      // Shuffle remaining pile cards
-      const remaining = cards.filter(c => !c.removed && !c.inSlot);
-      const positions = remaining.map(c => ({ x: c.x, y: c.y }));
-      // Fisher-Yates shuffle positions
-      for (let i = positions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [positions[i], positions[j]] = [positions[j], positions[i]];
-      }
-      remaining.forEach((c, i) => { c.x = positions[i].x; c.y = positions[i].y; });
-      Audio.playPop();
-      toast('牌堆已打乱！', 's');
-      renderBoard();
+      const rem = pile.filter(c=>!c.gone);
+      const xs = rem.map(c=>c.x), ys = rem.map(c=>c.y);
+      for (let i=xs.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [xs[i],xs[j]]=[xs[j],xs[i]]; [ys[i],ys[j]]=[ys[j],ys[i]]; }
+      rem.forEach((c,i)=>{ c.x=xs[i]; c.y=ys[i]; });
+      Audio.pop(); toast('牌堆已打乱！','s'); render();
     } else if (type === 'undo') {
-      // Put last slot card back
-      for (let i = slots.length - 1; i >= 0; i--) {
-        if (slots[i] !== null) {
-          const card = slots[i];
-          card.inSlot = false;
-          card.slotIdx = -1;
-          slots[i] = null;
-          toast('已撤回一张牌', 's');
-          Audio.playPop();
-          renderSlots();
-          renderBoard();
-          break;
+      for (let i=slots.length-1;i>=0;i--) {
+        if (slots[i]) {
+          slots[i].gone=false; slots[i]=null;
+          Audio.pop(); toast('已撤回一张牌','s'); render(); break;
         }
       }
     } else if (type === 'remove') {
-      // Remove 3 random from slots
-      let removed = 0;
-      const filled = slots.map((s, i) => s !== null ? i : -1).filter(i => i >= 0);
-      // Shuffle filled slots
-      for (let i = filled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [filled[i], filled[j]] = [filled[j], filled[i]];
+      let n=0;
+      for (let i=slots.length-1;i>=0&&n<3;i--) {
+        if (slots[i]) { slots[i].gone=true; slots[i]=null; n++; }
       }
-      for (const idx of filled) {
-        if (removed >= 3) break;
-        slots[idx].removed = true;
-        slots[idx] = null;
-        removed++;
-      }
-      Audio.playPop();
-      toast('已移出3张牌', 's');
-      renderSlots();
-      renderBoard();
-      checkGameOver();
+      Audio.pop(); toast('已移出3张牌','s'); render(); checkOver();
     }
   }
 
-  function updateToolUI() {
-    const sc = document.getElementById('tool-shuffle-count');
-    const uc = document.getElementById('tool-undo-count');
-    const rc = document.getElementById('tool-remove-count');
-    if (sc) sc.textContent = tools.shuffle + '次';
-    if (uc) uc.textContent = tools.undo + '次';
-    if (rc) rc.textContent = tools.remove + '次';
-
-    ['shuffle','undo','remove'].forEach(t => {
-      const el = document.getElementById('tool-' + t);
-      if (el) {
-        el.classList.toggle('used', tools[t] <= 0);
-        el.classList.toggle('disabled', tools[t] <= 0);
-      }
-    });
+  // Revive
+  function reviveAd() {
+    if (S.adLeft<=0) { toast('次数已用完','e'); return; }
+    S.adLeft--;
+    setTimeout(doRevive, 800);
   }
-
-  // ===== TIMER =====
-  function startTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-      if (paused) return;
-      elapsedSec++;
-      const m = Math.floor(elapsedSec / 60);
-      const s = elapsedSec % 60;
-      document.getElementById('game-timer').textContent = `⏱ ${m}:${s.toString().padStart(2, '0')}`;
-    }, 1000);
+  function reviveGold() {
+    if (S.gold<100) { toast('金币不足','e'); return; }
+    S.gold -= 100;
+    doRevive();
   }
-
-  function formatTime(sec) {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  }
-
-  // ===== START LEVEL =====
-  function startLevel(lvl, daily = false) {
-    // Anti-cheat: only allow starting at or just after max reachable level
-    const maxReached = Math.max(1, state.level);
-    if (!daily && lvl > maxReached + 1) {
-      toast('请从当前关卡开始游戏', 'e');
-      return;
+  function doRevive() {
+    let n=0;
+    for (let i=slots.length-1;i>=0&&n<3;i--) {
+      if (slots[i]) { slots[i].gone=true; slots[i]=null; n++; }
     }
-    isDaily = daily;
-    state.level = lvl;
-    cards = generateLevel(lvl, daily);
-    slots = [null, null, null, null, null, null, null];
-    tools = { shuffle: 2, undo: 3, remove: 1 };
-    stepCount = 0;
-    toolUsed = 0;
-    elapsedSec = 0;
-    paused = false;
-    gameActive = true;
-    cardIdCounter = cards.length;
-
-    updateToolUI();
-    document.getElementById('game-level-label').textContent = daily ? '每日挑战' : `第 ${lvl} 关`;
-    document.getElementById('game-timer').textContent = '⏱ 0:00';
-
-    // Update theme every 5 levels
-    const themeIdx = Math.floor(lvl / 5) % 4;
-    const themes = [
-      'linear-gradient(180deg,#C8F0C8 0%,#98D898 100%)',   // 春季草原
-      'linear-gradient(180deg,#F4E4C4 0%,#E8C890 100%)',   // 沙漠
-      'linear-gradient(180deg,#3D5A6C 0%,#2C3E50 100%)',   // 夜晚草原
-      'linear-gradient(180deg,#FF9A7A 0%,#FF7A5A 100%)',   // 傍晚
-    ];
-    const boardEl2 = document.getElementById('board-area');
-    if (boardEl2) boardEl2.style.background = themes[themeIdx];
-
-    renderBoard();
-    renderSlots();
-    showScreen('game');
-    startTimer();
-    Audio.init();
-    Audio.startBGM();
+    save(); toast('复活成功！继续挑战','s'); render(); active=true; startTimer(); show('game');
   }
 
-  function restartLevel() {
-    startLevel(state.level, isDaily);
+  // Timer
+  function startTimer() { clearInterval(tInt); tInt = setInterval(() => {
+    if (paused) return;
+    sec++; const m=Math.floor(sec/60),s=sec%60;
+    document.getElementById('g-timer').textContent = '⏱ '+m+':'+String(s).padStart(2,'0');
+  }, 1000); }
+
+  // Level select
+  const PAGES = [
+    {label:'1-60关', start:0},
+    {label:'61-420关', start:1},
+    {label:'421-1980关', start:33},
+    {label:'1981-100000关', start:33+6},
+  ];
+  function showLevelSelect() {
+    show('level-select');
+    page = Math.floor((Math.max(1,S.level)-1)/60);
+    renderLevelPage();
   }
-
-  function nextLevel() {
-    const nextLvl = state.level + 1;
-    if (isDaily) {
-      showHome();
-    } else if (nextLvl > 100000) {
-      toast('恭喜通关全部100000关！', 's');
-      showHome();
-    } else {
-      startLevel(nextLvl, false);
-    }
-  }
-
-  // ===== LEVEL SELECT =====
-  // Level select state for pagination
-  let levelPageOffset = 0;
-  const LEVELS_PER_PAGE = 60;
-
-  function renderLevelPage(offset) {
-    const grid = document.getElementById('level-grid');
-    const maxReached = Math.max(1, state.level);
-    const todayCount = state.todayLevels.length;
-    const atLimit = todayCount >= 30;
+  function renderLevelPage() {
+    const grid = document.getElementById('lp-grid');
     grid.innerHTML = '';
-
-    const startLvl = offset * LEVELS_PER_PAGE + 1;
-    const endLvl = Math.min((offset + 1) * LEVELS_PER_PAGE, 6000);
-
-    for (let i = startLvl; i <= endLvl; i++) {
+    const start = page*60+1, end = Math.min((page+1)*60, 100000);
+    for (let i=start;i<=end;i++) {
       const btn = document.createElement('button');
       btn.className = 'level-btn';
-      if (i > maxReached) {
-        btn.classList.add('locked');
-      } else if (i === state.level) {
-        btn.classList.add('current');
-      }
-      const won = state.todayLevels.filter(l => l === i).length;
-      btn.innerHTML = `<span class="level-num">${i}</span><span class="level-status">${won ? '⭐' : ''}</span>`;
-      if (i <= maxReached && !atLimit) {
-        btn.onclick = () => startLevel(i);
-      }
+      if (i > S.level) btn.classList.add('locked');
+      else if (i === S.level) btn.classList.add('current');
+      const won = S.todayLvls.filter(l=>l===i).length;
+      btn.innerHTML = '<span class="level-num">'+i+'</span><span class="level-status">'+(won?'⭐':'')+'</span>';
+      if (i <= S.level) btn.onclick = () => startLevel(i);
       grid.appendChild(btn);
     }
-
-    document.getElementById('level-progress-fill').style.width = (maxReached / 100000 * 100) + '%';
-
-    // Update nav buttons
-    const prevBtn = document.getElementById('level-prev');
-    const nextBtn = document.getElementById('level-next');
-    const pageLabel = document.getElementById('level-page-label');
-    if (prevBtn) prevBtn.style.visibility = offset > 0 ? 'visible' : 'hidden';
-    if (nextBtn) nextBtn.style.visibility = endLvl < 100000 ? 'visible' : 'hidden';
-    if (pageLabel) pageLabel.textContent = `${startLvl}-${endLvl}关`;
+    document.getElementById('lp-fill').style.width = (S.level/100000*100)+'%';
+    document.getElementById('lp-lbl').textContent = start+'-'+end+'关';
+    document.getElementById('lp-prev').style.visibility = page>0 ? 'visible' : 'hidden';
+    document.getElementById('lp-next').style.visibility = end<100000 ? 'visible' : 'hidden';
+    document.getElementById('lp-hint').textContent = S.todayLvls.length>=30 ? '已达今日30关上限' : '今日已挑战 '+S.todayLvls.length+'/30 关';
+    // Nav buttons
+    const nav = document.getElementById('lp-nav');
+    nav.innerHTML = '';
+    PAGES.forEach((p,idx) => {
+      const b = document.createElement('button');
+      b.className = 'level-nav-btn';
+      b.textContent = p.label;
+      b.onclick = () => { page = Math.floor(p.start); renderLevelPage(); };
+      nav.appendChild(b);
+    });
   }
+  function prevPage() { if (page>0) { page--; renderLevelPage(); } }
+  function nextPage() { if ((page+1)*60<100000) { page++; renderLevelPage(); } }
+  function levelJumpTo(idx) { page = Math.floor(PAGES[idx].start); renderLevelPage(); }
 
-  function showLevelSelect() {
-    showScreen('level-select');
-    // Jump to the page containing current level
-    const targetLevel = Math.max(1, state.level);
-    levelPageOffset = Math.floor((targetLevel - 1) / LEVELS_PER_PAGE);
-    renderLevelPage(levelPageOffset);
-
-    const hint = document.getElementById('level-hint');
-    const todayCount = state.todayLevels.length;
-    const atLimit = todayCount >= 30;
-    hint.textContent = atLimit ? '已达今日30关上限，明日再来吧～' : `今日已挑战 ${todayCount}/30 关`;
-    hint.style.display = isDaily ? 'none' : 'block';
-  }
-
-  function levelPageNav(dir) {
-    const maxPage = Math.floor((100000 - 1) / LEVELS_PER_PAGE);
-    levelPageOffset = Math.max(0, Math.min(maxPage, levelPageOffset + dir));
-    renderLevelPage(levelPageOffset);
-  }
-
-  function levelJumpTo(range) {
-    // range: 0=1-100, 1=101-500, 2=501-2000, 3=2001-6000
-    const jumps = [0, 100, 500, 2000];
-    levelPageOffset = Math.floor(jumps[range] / LEVELS_PER_PAGE);
-    renderLevelPage(levelPageOffset);
-  }
-
-  // ===== DAILY =====
-  function showDaily() {
-    // Generate a daily level based on date seed
-    const today = new Date();
-    const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
-    const dailyLvl = 51 + (seed % 10);
-    startLevel(dailyLvl, true);
-  }
-
-  // ===== SKINS =====
+  // Skins
   function showSkins() {
-    showScreen('skins');
-    renderSkins();
-  }
-
-  function renderSkins() {
-    const grid = document.getElementById('skin-grid');
+    show('skins');
+    document.getElementById('sk-frag').textContent = S.frags;
+    const pct = S.owned.length/36*100;
+    document.getElementById('sk-progress').style.width = pct+'%';
+    document.getElementById('sk-lbl').textContent = S.owned.length+' / 36 已解锁';
+    const grid = document.getElementById('sk-grid');
     grid.innerHTML = '';
-    document.getElementById('skin-fragments').textContent = state.fragments;
-
-    const owned = state.ownedSkins.length;
-    const pct = owned / 36 * 100;
-    document.getElementById('skin-progress-bar').style.width = pct + '%';
-    document.getElementById('skin-progress-lbl').textContent = `${owned} / 36 已解锁`;
-
-    ALL_SKINS.forEach(skin => {
-      const owned_s = state.ownedSkins.includes(skin.id);
-      const equipped = state.equippedSkin === skin.id;
-      const canAfford = state.fragments >= skin.cost;
-
-      const item = document.createElement('div');
-      item.className = 'skin-item' + (owned_s ? ' owned' : '') + (equipped ? ' equipped' : '') + (!owned_s && !canAfford ? ' locked' : '');
-
+    SKINS.forEach(sk => {
+      const owned = S.owned.includes(sk.id);
+      const equipped = S.equip === sk.id;
+      const canBuy = S.frags >= sk.c;
+      const el = document.createElement('div');
+      el.className = 'skin-item' + (owned?' owned':'') + (equipped?' equipped':'') + (!owned&&!canBuy?' locked':'');
       let badge = '';
-      if (equipped) badge = '<span class="skin-status-badge equipped">穿戴中</span>';
-      else if (owned_s) badge = '<span class="skin-status-badge owned">已拥有</span>';
-
-      item.innerHTML = `
-        <div class="skin-emoji">${skin.emoji}</div>
-        <div class="skin-name">${skin.name}</div>
-        ${!owned_s ? `<div class="skin-cost">🧩 ${skin.cost}</div>` : badge}
-      `;
-
-      item.onclick = () => {
-        if (owned_s) {
-          // Equip
-          state.equippedSkin = skin.id;
-          save();
-          toast(`已装备「${skin.name}」`, 's');
-          renderSkins();
-        } else if (canAfford) {
-          // Buy
-          state.fragments -= skin.cost;
-          state.ownedSkins.push(skin.id);
-          state.equippedSkin = skin.id;
-          save();
-          toast(`解锁「${skin.name}」成功！`, 's');
-          renderSkins();
-          updateHomeUI();
-        } else {
-          toast(`还需要 ${skin.cost - state.fragments} 个碎片`, 'e');
-          Audio.playError();
-        }
+      if (equipped) badge = '<span style="font-size:0.55rem;padding:1px 5px;border-radius:8px;background:#FFF3E0;color:#FF9A3D">穿戴中</span>';
+      else if (owned) badge = '<span style="font-size:0.55rem;padding:1px 5px;border-radius:8px;background:#E8F5E9;color:#4CAF50">已拥有</span>';
+      el.innerHTML = '<div class="skin-emoji">'+sk.e+'</div><div class="skin-name">'+sk.n+'</div>'+(owned?badge:'<div class="skin-cost">🧩 '+sk.c+'</div>');
+      el.onclick = () => {
+        if (owned) { S.equip = sk.id; save(); showSkins(); toast('已装备「'+sk.n+'」','s'); }
+        else if (canBuy) { S.frags -= sk.c; S.owned.push(sk.id); S.equip = sk.id; save(); showSkins(); toast('解锁「'+sk.n+'」成功！','s'); }
+        else { toast('还需要 '+(sk.c-S.frags)+' 个碎片','e'); }
       };
-
-      grid.appendChild(item);
+      grid.appendChild(el);
     });
   }
 
-  // ===== PAUSE =====
+  // Pause
   function togglePause() {
-    if (!gameActive) return;
+    if (!active) return;
     paused = !paused;
     document.getElementById('pause-overlay').classList.toggle('active', paused);
   }
 
-  // ===== SETTINGS =====
-  function showSettings() {
-    document.getElementById('settings-overlay').classList.add('active');
-    ['bgm','sfx','vibrate'].forEach(k => {
-      const btn = document.getElementById('toggle-' + k);
-      if (btn) btn.classList.toggle('on', state.settings[k]);
-    });
-  }
+  // Settings
+  function showSettings() { document.getElementById('settings-overlay').classList.add('active'); ['bgm','sfx','vibrate'].forEach(k=>{ const b=document.getElementById('t-'+k); if(b) b.classList.toggle('on', Audio.S[k]); }); }
+  function hideSettings() { document.getElementById('settings-overlay').classList.remove('active'); }
+  function toggleSetting(k) { const v = Audio.toggle(k); const b=document.getElementById('t-'+k); if(b) b.classList.toggle('on', v); }
 
-  function hideSettings() {
-    document.getElementById('settings-overlay').classList.remove('active');
-  }
-
-  function toggleSetting(key) {
-    state.settings[key] = Audio.toggle(key);
-    const btn = document.getElementById('toggle-' + key);
-    if (btn) btn.classList.toggle('on', state.settings[key]);
-  }
-
-  // ===== SHARE =====
+  // Share
   function shareResult() {
-    const text = `🐑 咩了个咩 第${state.level}关通关！用时${formatTime(elapsedSec)}，用了${toolUsed}次道具！`;
-    if (navigator.share) {
-      navigator.share({ title: '咩了个咩', text });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
-        toast('已复制到剪贴板！', 's');
-      }).catch(() => {
-        toast('分享内容：' + text, 's');
-      });
-    }
+    const text = '🐑 咩了个咩 第'+S.level+'关通关！用时'+fmt(sec)+'，用了'+toolUsed+'次道具！';
+    if (navigator.share) navigator.share({title:'咩了个咩',text}).catch(()=>{});
+    else { navigator.clipboard&&navigator.clipboard.writeText(text).then(()=>toast('已复制！','s')).catch(()=>toast(text,'s')); }
   }
 
-  // ===== CONFETTI =====
-  function spawnConfetti() {
-    const emojis = ['🎉', '🎊', '⭐', '🌟', '💫', '✨', '🎈', '🏆', '🐑', '🌈', '🍀'];
-    for (let i = 0; i < 50; i++) {
-      setTimeout(() => {
+  // Daily
+  function startDaily() {
+    const seed = new Date().getFullYear()*10000+(new Date().getMonth()+1)*100+new Date().getDate();
+    startLevel(51+seed%10, true);
+  }
+
+  // Next / restart
+  function nextLevel() {
+    const next = S.level + 1;
+    if (daily) { showHome(); return; }
+    if (next > 100000) { toast('恭喜通关全部100000关！','s'); showHome(); }
+    else startLevel(next);
+  }
+  function restartLevel() { startLevel(S.level, daily); }
+
+  // Confetti
+  function confetti() {
+    const es = ['🎉','🎊','⭐','🌟','💫','✨','🎈','🏆','🐑','🌈','🍀'];
+    for (let i=0;i<50;i++) {
+      setTimeout(()=>{
         const el = document.createElement('div');
         el.className = 'confetti';
-        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        el.style.left = Math.random() * 100 + 'vw';
-        el.style.animationDuration = (2 + Math.random() * 2) + 's';
-        el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+        el.textContent = es[Math.floor(Math.random()*es.length)];
+        el.style.left = Math.random()*100+'vw';
+        el.style.animationDuration = (2+Math.random()*2)+'s';
+        el.style.fontSize = (1+Math.random()*1.5)+'rem';
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 4000);
-      }, i * 50);
+        setTimeout(()=>el.remove(), 4000);
+      }, i*50);
     }
   }
-  function spawnDancingSheep() {
-    const sheep = ['🐑', '🐏', '🦙', '🐐'];
-    for (let i = 0; i < 8; i++) {
-      setTimeout(() => {
+  function dancingSheep() {
+    const sh = ['🐑','🐏','🦙','🐐'];
+    for (let i=0;i<8;i++) {
+      setTimeout(()=>{
         const el = document.createElement('div');
         el.className = 'confetti';
-        el.textContent = sheep[Math.floor(Math.random() * sheep.length)];
-        el.style.left = (15 + Math.random() * 70) + 'vw';
-        el.style.animationDuration = (2.5 + Math.random()) + 's';
+        el.textContent = sh[Math.floor(Math.random()*sh.length)];
+        el.style.left = (15+Math.random()*70)+'vw';
+        el.style.animationDuration = (2.5+Math.random())+'s';
         el.style.fontSize = '2.5rem';
         el.style.animationIterationCount = '3';
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 10000);
-      }, i * 200);
+        setTimeout(()=>el.remove(), 10000);
+      }, i*200);
     }
   }
 
-  // ===== TOAST =====
-  function toast(msg, type = '') {
+  // Toast
+  function toast(msg, type='') {
     const el = document.getElementById('toast');
     el.textContent = msg;
-    el.className = 'show' + (type ? ' ' + type : '');
-    setTimeout(() => el.classList.remove('show'), 2000);
-  }
-  let sheepBubbleTimeout = null;
-  function showSheepBubble(text) {
-    let bubble = document.getElementById('sheep-bubble');
-    if (!bubble) {
-      bubble = document.createElement('div');
-      bubble.id = 'sheep-bubble';
-      bubble.style.cssText = 'position:fixed;top:15%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);color:#4A3728;padding:8px 16px;border-radius:20px;font-size:1.3rem;font-weight:700;z-index:5000;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:opacity 0.3s;';
-      document.body.appendChild(bubble);
-    }
-    clearTimeout(sheepBubbleTimeout);
-    bubble.textContent = '🐑 ' + text;
-    bubble.style.opacity = '1';
-    sheepBubbleTimeout = setTimeout(() => { bubble.style.opacity = '0'; }, 800);
-  }
-  function showBlockedSheepSigh() {
-    if (Math.random() < 0.3) { // Only 30% chance to not spam
-      playSheepSigh();
-      showSheepBubble('唉...' );
-    }
+    el.className = 'show' + (type?' '+type:'');
+    setTimeout(()=>el.className='', 2000);
   }
 
-  function stopBGM() {
-    Audio.stopBGM();
-  }
+  function fmt(s) { return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 
-  // ===== INIT =====
+  // Init
   function init() {
     load();
-    updateHomeUI();
+    refreshHome();
     showHome();
-
-    // Handle resize
-    window.addEventListener('resize', () => {
-      if (document.getElementById('game').classList.contains('active')) {
-        renderBoard();
-      }
-    });
-
-    // Prevent context menu on long press
-    document.addEventListener('contextmenu', e => e.preventDefault());
   }
 
-  return { init, showHome, showLevelSelect, showSkins, showDaily, showSettings, hideSettings, toggleSetting, startLevel, nextLevel, restartLevel, useTool, togglePause, reviveByAd, reviveByGold, shareResult };
+  return { init, showHome, showLevelSelect, showSkins, showSettings, hideSettings, toggleSetting, pick, useTool, togglePause, reviveAd, reviveGold, nextLevel, restartLevel, shareResult, startDaily, prevPage, nextPage };
 })();
 
-// Start
 Game.init();
 </script>
 </body>
