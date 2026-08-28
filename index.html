@@ -10,7 +10,8 @@
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;user-select:none}
 
 /* ===== SCREENS ===== */
-.screen{display:none;height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px;padding-bottom:calc(20px + var(--safe))}
+.screen{display:none;height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px;padding-bottom:calc(20px + var(--safe));animation:fadeIn 0.25s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .screen.active{display:flex}
 
 /* ===== HOME ===== */
@@ -47,6 +48,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .pc{position:absolute;width:46px;height:60px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.75rem;cursor:pointer;transition:transform 0.08s;box-shadow:0 2px 6px rgba(0,0,0,0.15);border:2px solid rgba(0,0,0,0.07)}
 .pc:active{transform:scale(0.93)}
 .pc:hover{transform:scale(0.97)}
+.pc.clickable-pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
 .pc.blocked{pointer-events:none;opacity:0.35;cursor:not-allowed}
 .pc[data-t="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0)}
 .pc[data-t="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF)}
@@ -61,6 +64,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .slot-row{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
 .sc{width:50px;height:64px;background:rgba(240,230,211,0.3);border-radius:10px;border:2px dashed #D4C4A8;display:flex;align-items:center;justify-content:center;font-size:1.9rem;transition:background 0.15s}
 .sc.filled{background:transparent;border-style:solid;border-color:#C4A870;box-shadow:0 3px 8px rgba(0,0,0,0.12)}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.sc.shaking{animation:shake 0.3s ease-in-out}
 .sc[data-t="0"]{background:linear-gradient(145deg,#FFE4E4,#FFD0D0) !important}
 .sc[data-t="1"]{background:linear-gradient(145deg,#E4F6FF,#D0EEFF) !important}
 .sc[data-t="2"]{background:linear-gradient(145deg,#E4FFE9,#D0F5D8) !important}
@@ -81,7 +86,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .tool-count{font-size:0.7rem;font-weight:700;color:var(--primary)}
 
 /* ===== WIN ===== */
-#winscr{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
+#winscr{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%);animation:slideUp 0.4s ease-out}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 .win-badge{font-size:5rem;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275)}
 @keyframes popIn{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 .win-title{font-size:2rem;font-weight:900;color:var(--primary)}
@@ -97,7 +103,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn-secondary{height:48px;padding:0 24px;background:#fff;border:2px solid var(--primary);color:var(--primary);border-radius:24px;font-size:1rem;font-weight:700;cursor:pointer}
 
 /* ===== LOSE ===== */
-#losescr{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%)}
+#losescr{flex-direction:column;gap:14px;background:linear-gradient(180deg,#FFF8F0 0%,#FFE4C4 100%);animation:slideUp 0.4s ease-out}
 .lose-sheep{font-size:5rem;opacity:0.9}
 .lose-title{font-size:1.8rem;font-weight:900;color:#888}
 .lose-reason{font-size:0.85rem;color:#8B7355;text-align:center;max-width:280px}
@@ -402,7 +408,7 @@ const Game = (() => {
   let S = { level:1, gold:0, frags:0, owned:[0], equip:0, totalWin:0, todayWin:0, todayLvls:[], adLeft:2, bt:{} };
   let pile = [], slots = [null,null,null,null,null,null,null];
   let tools = {shuffle:2, undo:3, remove:1};
-  let steps = 0, toolUsed = 0, sec = 0, tInt = null, active = false, paused = false, daily = false;
+  let steps = 0, toolUsed = 0, sec = 0, tInt = null, active = false, paused = false, daily = false, matching = false;
   let page = 0, maxPage = Math.floor((100000-1)/60);
 
   // Persistence
@@ -414,6 +420,14 @@ const Game = (() => {
   }
   function load() {
     try {
+      // Migrate old keys if needed
+      const oldState = localStorage.getItem('miewmiew_state');
+      if (oldState && !localStorage.getItem('mg_state')) {
+        const os = JSON.parse(oldState);
+        if (os.level) localStorage.setItem('mg_state', oldState);
+        const od = localStorage.getItem('miewmiew_daily');
+        if (od) localStorage.setItem('mg_daily', od);
+      }
       const s = JSON.parse(localStorage.getItem('mg_state')||'{}');
       S = {...S,...s};
       const d = JSON.parse(localStorage.getItem('mg_daily')||'{}');
@@ -470,7 +484,7 @@ const Game = (() => {
       if (o.id===card.id || o.gone) continue;
       if (o.z <= card.z) continue;
       const dx = Math.abs(card.x - o.x), dy = Math.abs(card.y - o.y);
-      if (dx < 40 && dy < 54) return false;
+      if (dx < 42 && dy < 56) return false;
     }
     return true;
   }
@@ -493,6 +507,7 @@ const Game = (() => {
       el.style.left = card.x + 'px';
       el.style.top = card.y + 'px';
       el.style.zIndex = card.z;
+      if (clickable) el.classList.add('clickable-pulse');
       if (clickable) el.setAttribute('onclick', 'Game.pick('+card.id+')');
       board.appendChild(el);
     });
@@ -529,12 +544,17 @@ const Game = (() => {
     if (!card || card.gone) return;
     const empty = slots.findIndex(s => s === null);
     if (empty < 0) { checkMatch(); return; }
-    Audio.click();
-    Audio.baa();
+    Audio.click(); Audio.baa(); Audio.vib(30);
     card.gone = true;
     slots[empty] = card;
     steps++;
     render();
+    // Animate the slot that received the card
+    const slotEls = document.querySelectorAll('.sc');
+    if (slotEls[empty]) {
+      slotEls[empty].style.transform = 'scale(1.15)';
+      setTimeout(() => { if (slotEls[empty]) slotEls[empty].style.transform = ''; }, 150);
+    }
     checkMatch();
   }
 
@@ -542,33 +562,46 @@ const Game = (() => {
   function checkMatch() {
     const cnt = {};
     slots.forEach((c,i) => { if (c) { cnt[c.type] = (cnt[c.type]||[]); cnt[c.type].push(i); } });
+    if (matching) return;
     let matched = false;
     for (const t in cnt) {
       if (cnt[t].length >= 3) {
         matched = true;
-        Audio.match3();
+        matching = true;
+        Audio.match3(); Audio.vib(80);
         const rem = cnt[t].slice(0,3);
         setTimeout(() => {
           rem.forEach(i => { if (slots[i]) { slots[i].gone=true; slots[i]=null; } });
           renderSlots();
+          // Flash effect on slots
+          const slotEls = document.querySelectorAll('.sc');
+          rem.forEach(i => { if (slotEls[i]) { slotEls[i].style.transition='transform 0.15s'; slotEls[i].style.transform='scale(1.2)'; setTimeout(()=>{if(slotEls[i])slotEls[i].style.transform='';},150); } });
+          matching = false;
           setTimeout(checkOver, 100);
         }, 180);
         return;
       }
     }
     if (!matched) {
-      if (slots.every(s=>s!==null)) setTimeout(checkOver, 200);
+      if (slots.every(s=>s!==null)) {
+        // Shake the slot row to warn player
+        const sr = document.getElementById('slot-row');
+        if (sr) { sr.classList.add('shaking'); setTimeout(()=>sr.classList.remove('shaking'), 300); }
+        setTimeout(checkOver, 400);
+      }
     }
   }
 
   function checkOver() {
     const left = pile.filter(c => !c.gone);
-    if (left.length === 0) { win(); return; }
+    if (left.length === 0) { matching = false; win(); return; }
     const full = slots.every(s=>s!==null);
     if (!full) return;
     const cnt = {}; slots.forEach(c=>{ if(c) cnt[c.type]=(cnt[c.type]||0)+1; });
     if (Object.values(cnt).some(v=>v>=3)) return;
-    lose();
+    matching = false;
+    // Brief delay before showing lose screen for dramatic effect
+    setTimeout(lose, 300);
   }
 
   function win() {
@@ -592,7 +625,7 @@ const Game = (() => {
   }
 
   function lose() {
-    active=false; clearInterval(tInt); Audio.lose(); Audio.vib(300);
+    active=false; clearInterval(tInt); Audio.stopBGM(); Audio.lose(); Audio.vib(300); matching=false; matching=false;
     const reasons = ['槽位满了，差一点就过了！','最后一步运气差了点！','这关确实有点难，再试一次！'];
     document.getElementById('l-reason').textContent = reasons[Math.floor(Math.random()*reasons.length)];
     document.getElementById('l-ad-c').textContent = S.adLeft;
@@ -611,7 +644,7 @@ const Game = (() => {
     pile = genLevel(lvl);
     slots = [null,null,null,null,null,null,null];
     tools = {shuffle:2, undo:3, remove:1};
-    steps=0; toolUsed=0; sec=0; active=true; paused=false;
+    steps=0; toolUsed=0; sec=0; active=true; paused=false; matching=false;
     clearInterval(tInt);
     document.getElementById('g-level').textContent = daily ? '每日挑战' : '第 '+lvl+' 关';
     document.getElementById('g-timer').textContent = '⏱ 0:00';
@@ -624,7 +657,12 @@ const Game = (() => {
     render();
     Audio.init();
     Audio.startBGM();
+    // Fade transition
+    const gameEl = document.getElementById('game');
+    gameEl.style.opacity = '0';
+    gameEl.style.transition = 'opacity 0.2s';
     show('game');
+    requestAnimationFrame(() => { gameEl.style.opacity = '1'; });
   }
 
   // Tools
@@ -642,7 +680,11 @@ const Game = (() => {
     } else if (type === 'undo') {
       for (let i=slots.length-1;i>=0;i--) {
         if (slots[i]) {
-          slots[i].gone=false; slots[i]=null;
+          const card = slots[i];
+          // Restore the card in the pile too
+          const pileCard = pile.find(c => c.id === card.id);
+          if (pileCard) pileCard.gone = false;
+          slots[i].gone = false; slots[i] = null;
           Audio.pop(); toast('已撤回一张牌','s'); render(); break;
         }
       }
@@ -787,7 +829,7 @@ const Game = (() => {
     if (next > 100000) { toast('恭喜通关全部100000关！','s'); showHome(); }
     else startLevel(next);
   }
-  function restartLevel() { startLevel(S.level, daily); }
+  function restartLevel() { matching=false; startLevel(S.level, daily); }
 
   // Confetti
   function confetti() {
@@ -822,6 +864,17 @@ const Game = (() => {
     }
   }
 
+  // Blocked card feedback
+  function pickBlocked(id) {
+    const card = pile.find(c => c.id === id);
+    if (!card || card.gone) return;
+    Audio.baa();
+    toast('这张牌被压住了！', 'e');
+    // Brief shake on the blocked card element
+    const el = document.querySelector('.pc[data-id="'+id+'"]');
+    if (el) { el.style.transition='transform 0.1s'; el.style.transform='translateX(6px)'; setTimeout(()=>{if(el)el.style.transform='translateX(-6px)';},80); setTimeout(()=>{if(el)el.style.transform='';},160); }
+  }
+
   // Toast
   function toast(msg, type='') {
     const el = document.getElementById('toast');
@@ -839,7 +892,7 @@ const Game = (() => {
     showHome();
   }
 
-  return { init, showHome, showLevelSelect, showSkins, showSettings, hideSettings, toggleSetting, pick, useTool, togglePause, reviveAd, reviveGold, nextLevel, restartLevel, shareResult, startDaily, prevPage, nextPage };
+  return { init, showHome, showLevelSelect, showSkins, showSettings, hideSettings, toggleSetting, pick, pickBlocked, useTool, togglePause, reviveAd, reviveGold, nextLevel, restartLevel, shareResult, startDaily, prevPage, nextPage };
 })();
 
 Game.init();
