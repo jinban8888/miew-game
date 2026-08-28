@@ -779,10 +779,11 @@ const Game = (() => {
       el.style.transform = `scale(${scale})`;
 
       if (clickable) {
-        el.addEventListener('click', () => { onCardClick(card); });
+        const cardId = card.id;
+        el.addEventListener('click', () => { onCardClickById(cardId); });
         el.addEventListener('touchstart', (e) => {
           e.preventDefault();
-          onCardClick(card);
+          onCardClickById(cardId);
         }, { passive: false });
       }
 
@@ -829,9 +830,10 @@ const Game = (() => {
   }
 
   // ===== CARD CLICK =====
-  function onCardClick(card) {
+  function onCardClickById(id) {
     if (!gameActive || paused) return;
-    if (!card || card.removed || card.inSlot) return;
+    const card = cards.find(c => c.id === id);
+    if (!card || card.removed || card.inSlot || !isCardClickable(card)) return;
 
     // Find empty slot
     const emptyIdx = slots.findIndex(s => s === null);
